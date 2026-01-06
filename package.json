@@ -27,6 +27,14 @@
     "Orchard <orchardyz@outlook.com>"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Orchardxyz/openspec-stat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Orchardxyz/openspec-stat/issues"
+  },
+  "homepage": "https://github.com/Orchardxyz/openspec-stat#readme",
   "files": [
     "dist",
     "compiled"
