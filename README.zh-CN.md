@@ -46,7 +46,7 @@ pnpm add -D openspec-stat
 openspec-stat
 ```
 
-这将追踪默认时间范围内的提交（昨天 18:00 ~ 今天 18:00）。
+这将追踪默认时间范围内的提交（昨天 20:00 ~ 今天 20:00）。
 
 ### 命令行选项
 
@@ -56,8 +56,8 @@ openspec-stat [选项]
 选项：
   -r, --repo <path>           仓库路径（默认：当前目录）
   -b, --branches <branches>   分支列表，逗号分隔（例如：origin/master,origin/release/v1.0）
-  -s, --since <datetime>      开始时间（默认：昨天 18:00）
-  -u, --until <datetime>      结束时间（默认：今天 18:00）
+  -s, --since <datetime>      开始时间（默认：昨天 20:00）
+  -u, --until <datetime>      结束时间（默认：今天 20:00）
   -a, --author <name>         按特定作者筛选
   --json                      以 JSON 格式输出
   --csv                       以 CSV 格式输出

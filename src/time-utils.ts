@@ -1,6 +1,6 @@
 export function getDefaultTimeRange(
   sinceHours: number = -30,
-  untilHours: number = 18
+  untilHours: number = 20
 ): { since: Date; until: Date } {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -8,10 +8,10 @@ export function getDefaultTimeRange(
   yesterday.setDate(yesterday.getDate() - 1);
 
   const since = new Date(yesterday);
-  since.setHours(18, 0, 0, 0);
+  since.setHours(untilHours, 0, 0, 0);
 
   const until = new Date(today);
-  until.setHours(18, 0, 0, 0);
+  until.setHours(untilHours, 0, 0, 0);
 
   return { since, until };
 }

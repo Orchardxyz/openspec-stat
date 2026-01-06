@@ -5,7 +5,7 @@
     "origin/release/*"
   ],
   "defaultSinceHours": -30,
-  "defaultUntilHours": 18,
+  "defaultUntilHours": 20,
   "authorMapping": {
     "John Doe": "John Doe",
     "john.doe@company.com": "John Doe",

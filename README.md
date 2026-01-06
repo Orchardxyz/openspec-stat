@@ -44,7 +44,7 @@ Run in a Git repository directory:
 openspec-stat
 ```
 
-This will track commits in the default time range (yesterday 18:00 ~ today 18:00).
+This will track commits in the default time range (yesterday 20:00 ~ today 20:00).
 
 ### Command Line Options
 
@@ -54,8 +54,8 @@ openspec-stat [options]
 Options:
   -r, --repo <path>           Repository path (default: current directory)
   -b, --branches <branches>   Branch list, comma-separated (e.g., origin/master,origin/release/v1.0)
-  -s, --since <datetime>      Start time (default: yesterday 18:00)
-  -u, --until <datetime>      End time (default: today 18:00)
+  -s, --since <datetime>      Start time (default: yesterday 20:00)
+  -u, --until <datetime>      End time (default: today 20:00)
   -a, --author <name>         Filter by specific author
   --json                      Output in JSON format
   --csv                       Output in CSV format

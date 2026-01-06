@@ -5,7 +5,7 @@ import { Config } from './types.js';
 const DEFAULT_CONFIG: Config = {
   defaultBranches: ['origin/master'],
   defaultSinceHours: -30,
-  defaultUntilHours: 18,
+  defaultUntilHours: 20,
   authorMapping: {},
   openspecDir: 'openspec/',
   excludeExtensions: ['.md', '.txt', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'],

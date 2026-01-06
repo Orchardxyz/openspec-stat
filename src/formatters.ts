@@ -9,8 +9,8 @@ export class OutputFormatter {
     output += chalk.bold(t('output.title'));
     output += chalk.gray(
       t('output.timeRange', {
-        since: result.timeRange.since.toLocaleString(),
-        until: result.timeRange.until.toLocaleString()
+        since: result.timeRange.since.toLocaleString('zh-CN', { hour12: false }),
+        until: result.timeRange.until.toLocaleString('zh-CN', { hour12: false })
       })
     );
     output += chalk.gray(t('output.branches', { branches: result.branches.join(', ') }));
@@ -170,8 +170,8 @@ export class OutputFormatter {
     let md = '';
     md += t('markdown.title');
     md += t('markdown.timeRange', {
-      since: result.timeRange.since.toLocaleString(),
-      until: result.timeRange.until.toLocaleString()
+      since: result.timeRange.since.toLocaleString('zh-CN', { hour12: false }),
+      until: result.timeRange.until.toLocaleString('zh-CN', { hour12: false })
     });
     md += t('markdown.branches', { branches: result.branches.join(', ') });
     md += t('markdown.totalCommits', { count: String(result.totalCommits) });
