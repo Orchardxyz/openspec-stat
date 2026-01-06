@@ -1,0 +1,49 @@
+{
+  "name": "openspec-stat",
+  "version": "1.0.0",
+  "description": "Track team members' OpenSpec proposals and code changes in Git repositories",
+  "main": "dist/cjs/index.js",
+  "types": "dist/cjs/index.d.ts",
+  "type": "module",
+  "bin": {
+    "openspec-stat": "dist/esm/cli.js"
+  },
+  "scripts": {
+    "dev": "father dev",
+    "build": "father build",
+    "build:deps": "father prebundle",
+    "prepublishOnly": "father doctor && npm run build",
+    "test:cli": "node dist/esm/cli.js --help",
+    "link:global": "npm link"
+  },
+  "keywords": [
+    "openspec",
+    "git",
+    "statistics",
+    "cli",
+    "analytics"
+  ],
+  "authors": [
+    "Orchard <orchardyz@outlook.com>"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist",
+    "compiled"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "father": "^4.6.13"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.1.0",
+    "chalk": "^5.6.2",
+    "cli-table3": "^0.6.5",
+    "commander": "^14.0.2",
+    "date-fns": "^4.1.0",
+    "simple-git": "^3.30.0"
+  }
+}

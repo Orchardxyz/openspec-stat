@@ -1,0 +1,33 @@
+{
+  "defaultBranches": [
+    "origin/master",
+    "origin/main",
+    "origin/release/*"
+  ],
+  "defaultSinceHours": -30,
+  "defaultUntilHours": 18,
+  "authorMapping": {
+    "John Doe": "John Doe",
+    "john.doe@company.com": "John Doe",
+    "johnd": "John Doe",
+    "Jane Smith": "Jane Smith",
+    "jane.smith@company.com": "Jane Smith"
+  },
+  "openspecDir": "openspec/",
+  "excludeExtensions": [
+    ".md",
+    ".txt",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".ico",
+    ".webp",
+    ".bmp",
+    ".pdf",
+    ".doc",
+    ".docx"
+  ],
+  "activeUserWeeks": 2
+}

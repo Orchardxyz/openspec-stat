@@ -1,0 +1,121 @@
+import { CommitAnalysis, AuthorStats, StatsResult, Config } from './types.js';
+import { normalizeAuthor } from './config.js';
+
+export class StatsAggregator {
+  private config: Config;
+  private activeAuthors?: Set<string>;
+
+  constructor(config: Config, activeAuthors?: Set<string>) {
+    this.config = config;
+    this.activeAuthors = activeAuthors;
+  }
+
+  aggregate(
+    analyses: CommitAnalysis[],
+    since: Date,
+    until: Date,
+    branches: string[],
+    filterAuthor?: string
+  ): StatsResult {
+    const authorStatsMap = new Map<string, AuthorStats>();
+
+    for (const analysis of analyses) {
+      const normalizedAuthor = normalizeAuthor(
+        analysis.commit.author,
+        this.config.authorMapping
+      );
+
+      if (this.activeAuthors && !this.activeAuthors.has(normalizedAuthor)) {
+        continue;
+      }
+
+      if (filterAuthor && normalizedAuthor !== filterAuthor) {
+        continue;
+      }
+
+      let stats = authorStatsMap.get(normalizedAuthor);
+      if (!stats) {
+        stats = {
+          author: normalizedAuthor,
+          commits: 0,
+          openspecProposals: new Set<string>(),
+          codeFilesChanged: 0,
+          additions: 0,
+          deletions: 0,
+          netChanges: 0,
+          branchStats: new Map(),
+        };
+        authorStatsMap.set(normalizedAuthor, stats);
+      }
+
+      stats.commits++;
+      stats.additions += analysis.totalAdditions;
+      stats.deletions += analysis.totalDeletions;
+      stats.netChanges += analysis.netChanges;
+      stats.codeFilesChanged += analysis.codeFiles.length;
+
+      for (const proposal of analysis.openspecProposals) {
+        stats.openspecProposals.add(proposal);
+      }
+
+      if (
+        !stats.lastCommitDate ||
+        analysis.commit.date > stats.lastCommitDate
+      ) {
+        stats.lastCommitDate = analysis.commit.date;
+      }
+
+      if (
+        !stats.firstCommitDate ||
+        analysis.commit.date < stats.firstCommitDate
+      ) {
+        stats.firstCommitDate = analysis.commit.date;
+      }
+
+      if (analysis.commit.branches && stats.branchStats) {
+        for (const branch of analysis.commit.branches) {
+          let branchStat = stats.branchStats.get(branch);
+          if (!branchStat) {
+            branchStat = {
+              branch,
+              commits: 0,
+              openspecProposals: new Set<string>(),
+              codeFilesChanged: 0,
+              additions: 0,
+              deletions: 0,
+              netChanges: 0,
+            };
+            stats.branchStats.set(branch, branchStat);
+          }
+
+          branchStat.commits++;
+          branchStat.additions += analysis.totalAdditions;
+          branchStat.deletions += analysis.totalDeletions;
+          branchStat.netChanges += analysis.netChanges;
+          branchStat.codeFilesChanged += analysis.codeFiles.length;
+
+          for (const proposal of analysis.openspecProposals) {
+            branchStat.openspecProposals.add(proposal);
+          }
+        }
+      }
+    }
+
+    for (const stats of authorStatsMap.values()) {
+      if (stats.firstCommitDate && stats.lastCommitDate) {
+        const days = Math.ceil(
+          (stats.lastCommitDate.getTime() - stats.firstCommitDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+        );
+        stats.statisticsPeriod = days === 0 ? '1 day' : `${days + 1} days`;
+      }
+    }
+
+    return {
+      timeRange: { since, until },
+      branches,
+      authors: authorStatsMap,
+      totalCommits: analyses.length,
+    };
+  }
+}
