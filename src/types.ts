@@ -21,6 +21,7 @@ export interface CliOptions {
   config?: string;
   verbose?: boolean;
   interactive?: boolean;
+  lang?: string;
 }
 
 export interface CommitInfo {

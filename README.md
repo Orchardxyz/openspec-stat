@@ -14,6 +14,7 @@ A CLI tool for tracking team members' OpenSpec proposals and code changes in Git
 - ✅ Author name mapping (handle multiple Git accounts for the same person)
 - ✅ Track only recently active members (default: 2 weeks)
 - ✅ Multiple output formats: Table, JSON, CSV, Markdown
+- ✅ Internationalization support: English and Chinese (简体中文)
 
 ## Installation
 
@@ -61,6 +62,7 @@ Options:
   --markdown                  Output in Markdown format
   -c, --config <path>         Configuration file path
   -v, --verbose               Verbose output mode
+  -l, --lang <language>       Language for output (en, zh-CN) (default: "en")
   -V, --version               Display version number
   -h, --help                  Display help information
 ```
@@ -91,6 +93,12 @@ openspec-stat --verbose
 
 # Use custom configuration file
 openspec-stat --config ./my-config.json
+
+# Use Chinese output
+openspec-stat --lang zh-CN
+
+# Combine with other options
+openspec-stat --lang zh-CN --verbose
 ```
 
 ## Configuration File
@@ -188,6 +196,22 @@ openspec-stat --csv > stats.csv
 ```bash
 openspec-stat --markdown > report.md
 ```
+
+## Language Support
+
+The tool supports both English and Chinese output. You can specify the language using the `--lang` option:
+
+```bash
+# English output (default)
+openspec-stat --lang en
+
+# Chinese output
+openspec-stat --lang zh-CN
+```
+
+The tool will also automatically detect your system language. If your system locale is set to Chinese, the output will default to Chinese.
+
+For a Chinese version of this README, see [README.zh-CN.md](./README.zh-CN.md).
 
 ## Development
 

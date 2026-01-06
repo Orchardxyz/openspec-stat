@@ -1,16 +1,20 @@
 import Table from 'cli-table3';
 import chalk from 'chalk';
 import { StatsResult, AuthorStats } from './types.js';
+import { t } from './i18n/index.js';
 
 export class OutputFormatter {
   formatTable(result: StatsResult, verbose: boolean = false): string {
     let output = '';
-    output += chalk.bold('\n📊 OpenSpec Statistics Report\n');
+    output += chalk.bold(t('output.title'));
     output += chalk.gray(
-      `Time Range: ${result.timeRange.since.toLocaleString('en-US')} ~ ${result.timeRange.until.toLocaleString('en-US')}\n`
+      t('output.timeRange', {
+        since: result.timeRange.since.toLocaleString(),
+        until: result.timeRange.until.toLocaleString()
+      })
     );
-    output += chalk.gray(`Branches: ${result.branches.join(', ')}\n`);
-    output += chalk.gray(`Total Commits: ${result.totalCommits}\n\n`);
+    output += chalk.gray(t('output.branches', { branches: result.branches.join(', ') }));
+    output += chalk.gray(t('output.totalCommits', { count: String(result.totalCommits) }));
 
     const sortedAuthors = Array.from(result.authors.values()).sort(
       (a, b) => b.commits - a.commits
@@ -22,13 +26,13 @@ export class OutputFormatter {
       if (stats.branchStats && stats.branchStats.size > 0) {
         const branchTable = new Table({
           head: [
-            chalk.cyan('Branch'),
-            chalk.cyan('Commits'),
-            chalk.cyan('Proposals'),
-            chalk.cyan('Code Files'),
-            chalk.cyan('Additions'),
-            chalk.cyan('Deletions'),
-            chalk.cyan('Net Changes'),
+            chalk.cyan(t('table.branch')),
+            chalk.cyan(t('table.commits')),
+            chalk.cyan(t('table.proposals')),
+            chalk.cyan(t('table.codeFiles')),
+            chalk.cyan(t('table.additions')),
+            chalk.cyan(t('table.deletions')),
+            chalk.cyan(t('table.netChanges')),
           ],
           style: {
             head: [],
@@ -55,7 +59,7 @@ export class OutputFormatter {
         }
 
         branchTable.push([
-          chalk.bold.yellow('TOTAL (Deduplicated)'),
+          chalk.bold.yellow(t('table.totalDeduplicated')),
           chalk.bold(stats.commits.toString()),
           chalk.bold(stats.openspecProposals.size.toString()),
           chalk.bold(stats.codeFilesChanged.toString()),
@@ -70,13 +74,13 @@ export class OutputFormatter {
       } else {
         const simpleTable = new Table({
           head: [
-            chalk.cyan('Period'),
-            chalk.cyan('Commits'),
-            chalk.cyan('Proposals'),
-            chalk.cyan('Code Files'),
-            chalk.cyan('Additions'),
-            chalk.cyan('Deletions'),
-            chalk.cyan('Net Changes'),
+            chalk.cyan(t('table.period')),
+            chalk.cyan(t('table.commits')),
+            chalk.cyan(t('table.proposals')),
+            chalk.cyan(t('table.codeFiles')),
+            chalk.cyan(t('table.additions')),
+            chalk.cyan(t('table.deletions')),
+            chalk.cyan(t('table.netChanges')),
           ],
           style: {
             head: [],
@@ -100,7 +104,7 @@ export class OutputFormatter {
       }
 
       if (verbose && stats.openspecProposals.size > 0) {
-        output += chalk.gray(`  Proposals: ${Array.from(stats.openspecProposals).join(', ')}\n`);
+        output += chalk.gray(t('output.proposals', { proposals: Array.from(stats.openspecProposals).join(', ') }));
       }
     }
 
@@ -134,7 +138,7 @@ export class OutputFormatter {
   formatCSV(result: StatsResult): string {
     const rows: string[] = [];
     rows.push(
-      'Author,Period,Commits,Proposals Count,Proposals List,Code Files,Additions,Deletions,Net Changes,Last Commit Date'
+      `${t('table.author')},${t('table.period')},${t('table.commits')},${t('table.proposalsCount')},${t('table.proposalsList')},${t('table.codeFiles')},${t('table.additions')},${t('table.deletions')},${t('table.netChanges')},${t('table.lastCommitDate')}`
     );
 
     const sortedAuthors = Array.from(result.authors.values()).sort(
@@ -164,14 +168,17 @@ export class OutputFormatter {
 
   formatMarkdown(result: StatsResult): string {
     let md = '';
-    md += '# OpenSpec Statistics Report\n\n';
-    md += `**Time Range**: ${result.timeRange.since.toLocaleString('en-US')} ~ ${result.timeRange.until.toLocaleString('en-US')}\n\n`;
-    md += `**Branches**: ${result.branches.join(', ')}\n\n`;
-    md += `**Total Commits**: ${result.totalCommits}\n\n`;
+    md += t('markdown.title');
+    md += t('markdown.timeRange', {
+      since: result.timeRange.since.toLocaleString(),
+      until: result.timeRange.until.toLocaleString()
+    });
+    md += t('markdown.branches', { branches: result.branches.join(', ') });
+    md += t('markdown.totalCommits', { count: String(result.totalCommits) });
 
-    md += '## Statistics\n\n';
+    md += t('markdown.statistics');
     md +=
-      '| Author | Period | Commits | Proposals | Code Files | Additions | Deletions | Net Changes |\n';
+      `| ${t('table.author')} | ${t('table.period')} | ${t('table.commits')} | ${t('table.proposals')} | ${t('table.codeFiles')} | ${t('table.additions')} | ${t('table.deletions')} | ${t('table.netChanges')} |\n`;
     md +=
       '|--------|--------|---------|-----------|------------|-----------|-----------|-------------|\n';
 
@@ -183,7 +190,7 @@ export class OutputFormatter {
       md += `| ${stats.author} | ${stats.statisticsPeriod || '-'} | ${stats.commits} | ${stats.openspecProposals.size} | ${stats.codeFilesChanged} | +${stats.additions} | -${stats.deletions} | ${stats.netChanges >= 0 ? '+' : ''}${stats.netChanges} |\n`;
     }
 
-    md += '\n## Proposal Details\n\n';
+    md += t('markdown.proposalDetails');
     for (const stats of sortedAuthors) {
       if (stats.openspecProposals.size > 0) {
         md += `### ${stats.author}\n\n`;

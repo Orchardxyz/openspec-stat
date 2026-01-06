@@ -1,6 +1,7 @@
 import { select, checkbox, input } from '@inquirer/prompts';
 import simpleGit from 'simple-git';
 import chalk from 'chalk';
+import { t } from './i18n/index.js';
 
 export interface BranchInfo {
   name: string;
@@ -47,32 +48,32 @@ export async function selectBranches(
   repoPath: string,
   defaultBranches?: string[]
 ): Promise<string[]> {
-  console.log(chalk.blue('\n🔍 Fetching active branches...'));
+  console.log(chalk.blue(t('branch.fetching')));
   const activeBranches = await getActiveBranches(repoPath, 10);
 
   if (activeBranches.length === 0) {
-    console.log(chalk.yellow('⚠️  No remote branches found'));
+    console.log(chalk.yellow(t('warning.noBranches')));
     return defaultBranches || [];
   }
 
   const choices = activeBranches.map((branch) => ({
-    name: `${branch.name} (last commit: ${branch.lastCommitDate.toLocaleDateString()})`,
+    name: `${branch.name} (${t('branch.lastCommit', { date: branch.lastCommitDate.toLocaleDateString() })})`,
     value: branch.name,
     checked: false,
   }));
 
   choices.push({
-    name: chalk.gray('--- Custom input ---'),
+    name: chalk.gray(t('branch.customSeparator')),
     value: '__custom__',
     checked: false,
   });
 
   const mode = await select({
-    message: 'How would you like to select branches?',
+    message: t('branch.selectMode'),
     choices: [
-      { name: 'Select from active branches', value: 'select' },
-      { name: 'Use default branches from config', value: 'default' },
-      { name: 'Custom input', value: 'custom' },
+      { name: t('branch.mode.select'), value: 'select' },
+      { name: t('branch.mode.default'), value: 'default' },
+      { name: t('branch.mode.custom'), value: 'custom' },
     ],
   });
 
@@ -82,20 +83,20 @@ export async function selectBranches(
 
   if (mode === 'custom') {
     const customInput = await input({
-      message: 'Enter branch names (comma-separated):',
+      message: t('branch.customInput'),
       default: defaultBranches?.join(', ') || '',
     });
     return customInput.split(',').map((b) => b.trim()).filter((b) => b);
   }
 
   const selected = await checkbox({
-    message: 'Select branches to analyze:',
+    message: t('branch.selectPrompt'),
     choices: choices.slice(0, -1),
     pageSize: 15,
   });
 
   if (selected.length > 0) {
-    console.log(chalk.green('\n✓ Selected branches:'));
+    console.log(chalk.green(t('branch.selected')));
     selected.forEach((branch) => {
       console.log(chalk.green(`  • ${branch}`));
     });
@@ -103,7 +104,7 @@ export async function selectBranches(
 
   if (selected.includes('__custom__')) {
     const customInput = await input({
-      message: 'Enter additional branch names (comma-separated):',
+      message: t('branch.additionalInput'),
     });
     const customBranches = customInput.split(',').map((b) => b.trim()).filter((b) => b);
     return [...selected.filter((b) => b !== '__custom__'), ...customBranches];

@@ -8,6 +8,7 @@ import { OutputFormatter } from './formatters.js';
 import { getDefaultTimeRange, parseDateTime, parseBranches } from './time-utils.js';
 import { selectBranches } from './branch-selector.js';
 import { CliOptions } from './types.js';
+import { initI18n, t } from './i18n/index.js';
 
 const program = new Command();
 
@@ -26,9 +27,12 @@ program
   .option('--markdown', 'Output in Markdown format')
   .option('-c, --config <path>', 'Configuration file path')
   .option('-v, --verbose', 'Verbose output mode')
+  .option('-l, --lang <language>', 'Language for output (en, zh-CN)', 'en')
   .action(async (options: CliOptions) => {
     try {
-      console.log(chalk.blue('🔍 Loading configuration...'));
+      initI18n(options.lang);
+      
+      console.log(chalk.blue(t('loading.config')));
       const config = await loadConfig(options.config, options.repo);
 
       let since: Date;
@@ -67,14 +71,19 @@ program
 
       console.log(
         chalk.blue(
-          `📅 Time Range: ${since.toLocaleString('en-US')} ~ ${until.toLocaleString('en-US')}`
+          t('info.timeRange', { 
+            since: since.toLocaleString(), 
+            until: until.toLocaleString() 
+          })
         )
       );
-      console.log(chalk.blue(`🌿 Branches: ${branches.join(', ') || 'All branches'}`));
+      console.log(chalk.blue(t('info.branches', { 
+        branches: branches.join(', ') || t('info.allBranches') 
+      })));
 
       const analyzer = new GitAnalyzer(options.repo, config);
 
-      console.log(chalk.blue('🔍 Fetching active users...'));
+      console.log(chalk.blue(t('loading.activeUsers')));
       const activeAuthors = await analyzer.getActiveAuthors(
         config.activeUserWeeks || 2
       );
@@ -82,27 +91,33 @@ program
       if (options.verbose) {
         console.log(
           chalk.gray(
-            `   Active users (within ${config.activeUserWeeks || 2} weeks): ${Array.from(activeAuthors).join(', ')}`
+            t('info.activeUsers', {
+              weeks: String(config.activeUserWeeks || 2),
+              users: Array.from(activeAuthors).join(', ')
+            })
           )
         );
       }
 
-      console.log(chalk.blue('🔍 Analyzing commit history...'));
+      console.log(chalk.blue(t('loading.analyzing')));
       const commits = await analyzer.getCommits(since, until, branches);
 
       if (commits.length === 0) {
-        console.log(chalk.yellow('⚠️  No commits found matching the criteria'));
+        console.log(chalk.yellow(t('warning.noCommits')));
         return;
       }
 
-      console.log(chalk.blue(`📝 Found ${commits.length} commits, analyzing...`));
+      console.log(chalk.blue(t('info.foundCommits', { count: String(commits.length) })));
 
       const analyses = [];
       for (let i = 0; i < commits.length; i++) {
         const commit = commits[i];
         if (options.verbose && i % 10 === 0) {
           console.log(
-            chalk.gray(`   Analysis progress: ${i + 1}/${commits.length}`)
+            chalk.gray(t('info.analysisProgress', {
+              current: String(i + 1),
+              total: String(commits.length)
+            }))
           );
         }
         const analysis = await analyzer.analyzeCommit(commit);
@@ -113,16 +128,14 @@ program
 
       if (analyses.length === 0) {
         console.log(
-          chalk.yellow(
-            '⚠️  No commits found containing both OpenSpec proposals and code changes'
-          )
+          chalk.yellow(t('warning.noQualifyingCommits'))
         );
         return;
       }
 
       console.log(
         chalk.blue(
-          `✅ Found ${analyses.length} qualifying commits (containing OpenSpec proposals and code changes)`
+          t('info.qualifyingCommits', { count: String(analyses.length) })
         )
       );
 
@@ -147,7 +160,7 @@ program
         console.log(formatter.formatTable(result, options.verbose));
       }
     } catch (error) {
-      console.error(chalk.red('❌ Error:'), error);
+      console.error(chalk.red(t('error.prefix')), error);
       process.exit(1);
     }
   });
