@@ -16,6 +16,8 @@
     "prepublishOnly": "father doctor && npm run build",
     "test:cli": "node dist/esm/cli.js --help",
     "link:global": "npm link",
+    "link:local": "pnpm run build && chmod +x dist/esm/cli.js && npm link .",
+    "unlink": "npm unlink -g openspec-stat",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
