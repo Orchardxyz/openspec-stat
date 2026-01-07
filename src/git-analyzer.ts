@@ -18,13 +18,15 @@ export class GitAnalyzer {
     const logOptions: any = {
       '--since': sinceStr,
       '--until': untilStr,
-      '--all': null,
     };
 
     if (branches.length > 0) {
+      delete logOptions['--all'];
       for (const branch of branches) {
-        logOptions[`--remotes=${branch}`] = null;
+        logOptions[branch] = null;
       }
+    } else {
+      logOptions['--all'] = null;
     }
 
     const log = await this.git.log(logOptions);

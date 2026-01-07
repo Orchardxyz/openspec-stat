@@ -101,9 +101,18 @@ export class StatsAggregator {
       }
     }
 
+    const actualBranches = new Set<string>();
+    for (const stats of authorStatsMap.values()) {
+      if (stats.branchStats) {
+        for (const branch of stats.branchStats.keys()) {
+          actualBranches.add(branch);
+        }
+      }
+    }
+
     return {
       timeRange: { since, until },
-      branches,
+      branches: actualBranches.size > 0 ? Array.from(actualBranches) : branches,
       authors: authorStatsMap,
       totalCommits: analyses.length,
     };
