@@ -9,14 +9,11 @@ export interface BranchInfo {
   commitCount: number;
 }
 
-export async function getActiveBranches(
-  repoPath: string,
-  limit: number = 10
-): Promise<BranchInfo[]> {
+export async function getActiveBranches(repoPath: string, limit: number = 10): Promise<BranchInfo[]> {
   const git = simpleGit(repoPath);
-  
+
   const branches = await git.branch(['-r']);
-  const branchNames = branches.all.filter(b => !b.includes('HEAD'));
+  const branchNames = branches.all.filter((b) => !b.includes('HEAD'));
 
   const branchInfos: BranchInfo[] = [];
 
@@ -44,10 +41,7 @@ export async function getActiveBranches(
   return branchInfos.slice(0, limit);
 }
 
-export async function selectBranches(
-  repoPath: string,
-  defaultBranches?: string[]
-): Promise<string[]> {
+export async function selectBranches(repoPath: string, defaultBranches?: string[]): Promise<string[]> {
   console.log(chalk.blue(t('branch.fetching')));
   const activeBranches = await getActiveBranches(repoPath, 10);
 
@@ -86,7 +80,10 @@ export async function selectBranches(
       message: t('branch.customInput'),
       default: defaultBranches?.join(', ') || '',
     });
-    return customInput.split(',').map((b) => b.trim()).filter((b) => b);
+    return customInput
+      .split(',')
+      .map((b) => b.trim())
+      .filter((b) => b);
   }
 
   const selected = await checkbox({
@@ -106,7 +103,10 @@ export async function selectBranches(
     const customInput = await input({
       message: t('branch.additionalInput'),
     });
-    const customBranches = customInput.split(',').map((b) => b.trim()).filter((b) => b);
+    const customBranches = customInput
+      .split(',')
+      .map((b) => b.trim())
+      .filter((b) => b);
     return [...selected.filter((b) => b !== '__custom__'), ...customBranches];
   }
 

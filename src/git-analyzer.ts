@@ -11,11 +11,7 @@ export class GitAnalyzer {
     this.config = config;
   }
 
-  async getCommits(
-    since: Date,
-    until: Date,
-    branches: string[]
-  ): Promise<CommitInfo[]> {
+  async getCommits(since: Date, until: Date, branches: string[]): Promise<CommitInfo[]> {
     const sinceStr = since.toISOString();
     const untilStr = until.toISOString();
 
@@ -71,11 +67,7 @@ export class GitAnalyzer {
 
   async analyzeCommit(commit: CommitInfo): Promise<CommitAnalysis | null> {
     try {
-      const show = await this.git.show([
-        '--numstat',
-        '--format=',
-        commit.hash,
-      ]);
+      const show = await this.git.show(['--numstat', '--format=', commit.hash]);
 
       const lines = show.split('\n').filter((line) => line.trim());
       const fileChanges: FileChange[] = [];
@@ -96,9 +88,7 @@ export class GitAnalyzer {
         const deletions = delStr === '-' ? 0 : parseInt(delStr, 10);
 
         if (path.startsWith(openspecDir)) {
-          const proposalMatch = path.match(
-            new RegExp(`^${openspecDir}changes/([^/]+)`)
-          );
+          const proposalMatch = path.match(new RegExp(`^${openspecDir}changes/([^/]+)`));
           if (proposalMatch) {
             openspecProposals.add(proposalMatch[1]);
           }
@@ -119,14 +109,8 @@ export class GitAnalyzer {
       }
 
       if (openspecProposals.size > 0 && hasCodeChanges) {
-        const totalAdditions = fileChanges.reduce(
-          (sum, f) => sum + f.additions,
-          0
-        );
-        const totalDeletions = fileChanges.reduce(
-          (sum, f) => sum + f.deletions,
-          0
-        );
+        const totalAdditions = fileChanges.reduce((sum, f) => sum + f.additions, 0);
+        const totalDeletions = fileChanges.reduce((sum, f) => sum + f.deletions, 0);
 
         return {
           commit,
@@ -156,10 +140,7 @@ export class GitAnalyzer {
 
     const authors = new Set<string>();
     for (const commit of log.all) {
-      const normalizedAuthor = normalizeAuthor(
-        commit.author_name,
-        this.config.authorMapping
-      );
+      const normalizedAuthor = normalizeAuthor(commit.author_name, this.config.authorMapping);
       authors.add(normalizedAuthor);
     }
 

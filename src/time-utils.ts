@@ -1,7 +1,4 @@
-export function getDefaultTimeRange(
-  sinceHours: number = -30,
-  untilHours: number = 20
-): { since: Date; until: Date } {
+export function getDefaultTimeRange(sinceHours: number = -30, untilHours: number = 20): { since: Date; until: Date } {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today);
@@ -26,5 +23,8 @@ export function parseDateTime(dateStr: string): Date {
 
 export function parseBranches(branchesStr?: string): string[] {
   if (!branchesStr) return [];
-  return branchesStr.split(',').map((b) => b.trim()).filter((b) => b);
+  return branchesStr
+    .split(',')
+    .map((b) => b.trim())
+    .filter((b) => b);
 }

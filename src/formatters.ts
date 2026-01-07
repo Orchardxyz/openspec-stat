@@ -10,15 +10,13 @@ export class OutputFormatter {
     output += chalk.gray(
       t('output.timeRange', {
         since: result.timeRange.since.toLocaleString('zh-CN', { hour12: false }),
-        until: result.timeRange.until.toLocaleString('zh-CN', { hour12: false })
+        until: result.timeRange.until.toLocaleString('zh-CN', { hour12: false }),
       })
     );
     output += chalk.gray(t('output.branches', { branches: result.branches.join(', ') }));
     output += chalk.gray(t('output.totalCommits', { count: String(result.totalCommits) }));
 
-    const sortedAuthors = Array.from(result.authors.values()).sort(
-      (a, b) => b.commits - a.commits
-    );
+    const sortedAuthors = Array.from(result.authors.values()).sort((a, b) => b.commits - a.commits);
 
     for (const stats of sortedAuthors) {
       output += chalk.bold.cyan(`\n${stats.author}\n`);
@@ -40,9 +38,7 @@ export class OutputFormatter {
           },
         });
 
-        const sortedBranches = Array.from(stats.branchStats.values()).sort(
-          (a, b) => b.commits - a.commits
-        );
+        const sortedBranches = Array.from(stats.branchStats.values()).sort((a, b) => b.commits - a.commits);
 
         for (const branchStat of sortedBranches) {
           branchTable.push([
@@ -65,9 +61,7 @@ export class OutputFormatter {
           chalk.bold(stats.codeFilesChanged.toString()),
           chalk.bold.green(`+${stats.additions}`),
           chalk.bold.red(`-${stats.deletions}`),
-          stats.netChanges >= 0
-            ? chalk.bold.green(`+${stats.netChanges}`)
-            : chalk.bold.red(`${stats.netChanges}`),
+          stats.netChanges >= 0 ? chalk.bold.green(`+${stats.netChanges}`) : chalk.bold.red(`${stats.netChanges}`),
         ]);
 
         output += branchTable.toString() + '\n';
@@ -95,9 +89,7 @@ export class OutputFormatter {
           stats.codeFilesChanged.toString(),
           chalk.green(`+${stats.additions}`),
           chalk.red(`-${stats.deletions}`),
-          stats.netChanges >= 0
-            ? chalk.green(`+${stats.netChanges}`)
-            : chalk.red(`${stats.netChanges}`),
+          stats.netChanges >= 0 ? chalk.green(`+${stats.netChanges}`) : chalk.red(`${stats.netChanges}`),
         ]);
 
         output += simpleTable.toString() + '\n';
@@ -141,9 +133,7 @@ export class OutputFormatter {
       `${t('table.author')},${t('table.period')},${t('table.commits')},${t('table.proposalsCount')},${t('table.proposalsList')},${t('table.codeFiles')},${t('table.additions')},${t('table.deletions')},${t('table.netChanges')},${t('table.lastCommitDate')}`
     );
 
-    const sortedAuthors = Array.from(result.authors.values()).sort(
-      (a, b) => b.commits - a.commits
-    );
+    const sortedAuthors = Array.from(result.authors.values()).sort((a, b) => b.commits - a.commits);
 
     for (const stats of sortedAuthors) {
       const proposals = Array.from(stats.openspecProposals).join(';');
@@ -171,20 +161,16 @@ export class OutputFormatter {
     md += t('markdown.title');
     md += t('markdown.timeRange', {
       since: result.timeRange.since.toLocaleString('zh-CN', { hour12: false }),
-      until: result.timeRange.until.toLocaleString('zh-CN', { hour12: false })
+      until: result.timeRange.until.toLocaleString('zh-CN', { hour12: false }),
     });
     md += t('markdown.branches', { branches: result.branches.join(', ') });
     md += t('markdown.totalCommits', { count: String(result.totalCommits) });
 
     md += t('markdown.statistics');
-    md +=
-      `| ${t('table.author')} | ${t('table.period')} | ${t('table.commits')} | ${t('table.proposals')} | ${t('table.codeFiles')} | ${t('table.additions')} | ${t('table.deletions')} | ${t('table.netChanges')} |\n`;
-    md +=
-      '|--------|--------|---------|-----------|------------|-----------|-----------|-------------|\n';
+    md += `| ${t('table.author')} | ${t('table.period')} | ${t('table.commits')} | ${t('table.proposals')} | ${t('table.codeFiles')} | ${t('table.additions')} | ${t('table.deletions')} | ${t('table.netChanges')} |\n`;
+    md += '|--------|--------|---------|-----------|------------|-----------|-----------|-------------|\n';
 
-    const sortedAuthors = Array.from(result.authors.values()).sort(
-      (a, b) => b.commits - a.commits
-    );
+    const sortedAuthors = Array.from(result.authors.values()).sort((a, b) => b.commits - a.commits);
 
     for (const stats of sortedAuthors) {
       md += `| ${stats.author} | ${stats.statisticsPeriod || '-'} | ${stats.commits} | ${stats.openspecProposals.size} | ${stats.codeFilesChanged} | +${stats.additions} | -${stats.deletions} | ${stats.netChanges >= 0 ? '+' : ''}${stats.netChanges} |\n`;

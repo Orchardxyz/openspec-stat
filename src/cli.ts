@@ -14,7 +14,7 @@ const program = new Command();
 
 program
   .name('openspec-stat')
-  .description('Track team members\' OpenSpec proposals and code changes in Git repositories')
+  .description("Track team members' OpenSpec proposals and code changes in Git repositories")
   .version('0.0.1')
   .option('-r, --repo <path>', 'Repository path', '.')
   .option('-b, --branches <branches>', 'Branch list, comma-separated')
@@ -31,7 +31,7 @@ program
   .action(async (options: CliOptions) => {
     try {
       initI18n(options.lang);
-      
+
       console.log(chalk.blue(t('loading.config')));
       const config = await loadConfig(options.config, options.repo);
 
@@ -41,21 +41,12 @@ program
       if (options.since || options.until) {
         since = options.since
           ? parseDateTime(options.since)
-          : getDefaultTimeRange(
-              config.defaultSinceHours,
-              config.defaultUntilHours
-            ).since;
+          : getDefaultTimeRange(config.defaultSinceHours, config.defaultUntilHours).since;
         until = options.until
           ? parseDateTime(options.until)
-          : getDefaultTimeRange(
-              config.defaultSinceHours,
-              config.defaultUntilHours
-            ).until;
+          : getDefaultTimeRange(config.defaultSinceHours, config.defaultUntilHours).until;
       } else {
-        const defaultRange = getDefaultTimeRange(
-          config.defaultSinceHours,
-          config.defaultUntilHours
-        );
+        const defaultRange = getDefaultTimeRange(config.defaultSinceHours, config.defaultUntilHours);
         since = defaultRange.since;
         until = defaultRange.until;
       }
@@ -71,29 +62,31 @@ program
 
       console.log(
         chalk.blue(
-          t('info.timeRange', { 
-            since: since.toLocaleString(), 
-            until: until.toLocaleString() 
+          t('info.timeRange', {
+            since: since.toLocaleString(),
+            until: until.toLocaleString(),
           })
         )
       );
-      console.log(chalk.blue(t('info.branches', { 
-        branches: branches.join(', ') || t('info.allBranches') 
-      })));
+      console.log(
+        chalk.blue(
+          t('info.branches', {
+            branches: branches.join(', ') || t('info.allBranches'),
+          })
+        )
+      );
 
       const analyzer = new GitAnalyzer(options.repo, config);
 
       console.log(chalk.blue(t('loading.activeUsers')));
-      const activeAuthors = await analyzer.getActiveAuthors(
-        config.activeUserWeeks || 2
-      );
+      const activeAuthors = await analyzer.getActiveAuthors(config.activeUserWeeks || 2);
 
       if (options.verbose) {
         console.log(
           chalk.gray(
             t('info.activeUsers', {
               weeks: String(config.activeUserWeeks || 2),
-              users: Array.from(activeAuthors).join(', ')
+              users: Array.from(activeAuthors).join(', '),
             })
           )
         );
@@ -114,10 +107,12 @@ program
         const commit = commits[i];
         if (options.verbose && i % 10 === 0) {
           console.log(
-            chalk.gray(t('info.analysisProgress', {
-              current: String(i + 1),
-              total: String(commits.length)
-            }))
+            chalk.gray(
+              t('info.analysisProgress', {
+                current: String(i + 1),
+                total: String(commits.length),
+              })
+            )
           );
         }
         const analysis = await analyzer.analyzeCommit(commit);
@@ -127,26 +122,14 @@ program
       }
 
       if (analyses.length === 0) {
-        console.log(
-          chalk.yellow(t('warning.noQualifyingCommits'))
-        );
+        console.log(chalk.yellow(t('warning.noQualifyingCommits')));
         return;
       }
 
-      console.log(
-        chalk.blue(
-          t('info.qualifyingCommits', { count: String(analyses.length) })
-        )
-      );
+      console.log(chalk.blue(t('info.qualifyingCommits', { count: String(analyses.length) })));
 
       const aggregator = new StatsAggregator(config, activeAuthors);
-      const result = aggregator.aggregate(
-        analyses,
-        since,
-        until,
-        branches,
-        options.author
-      );
+      const result = aggregator.aggregate(analyses, since, until, branches, options.author);
 
       const formatter = new OutputFormatter();
 

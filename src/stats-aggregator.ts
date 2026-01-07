@@ -20,10 +20,7 @@ export class StatsAggregator {
     const authorStatsMap = new Map<string, AuthorStats>();
 
     for (const analysis of analyses) {
-      const normalizedAuthor = normalizeAuthor(
-        analysis.commit.author,
-        this.config.authorMapping
-      );
+      const normalizedAuthor = normalizeAuthor(analysis.commit.author, this.config.authorMapping);
 
       if (this.activeAuthors && !this.activeAuthors.has(normalizedAuthor)) {
         continue;
@@ -58,17 +55,11 @@ export class StatsAggregator {
         stats.openspecProposals.add(proposal);
       }
 
-      if (
-        !stats.lastCommitDate ||
-        analysis.commit.date > stats.lastCommitDate
-      ) {
+      if (!stats.lastCommitDate || analysis.commit.date > stats.lastCommitDate) {
         stats.lastCommitDate = analysis.commit.date;
       }
 
-      if (
-        !stats.firstCommitDate ||
-        analysis.commit.date < stats.firstCommitDate
-      ) {
+      if (!stats.firstCommitDate || analysis.commit.date < stats.firstCommitDate) {
         stats.firstCommitDate = analysis.commit.date;
       }
 
@@ -104,8 +95,7 @@ export class StatsAggregator {
     for (const stats of authorStatsMap.values()) {
       if (stats.firstCommitDate && stats.lastCommitDate) {
         const days = Math.ceil(
-          (stats.lastCommitDate.getTime() - stats.firstCommitDate.getTime()) /
-            (1000 * 60 * 60 * 24)
+          (stats.lastCommitDate.getTime() - stats.firstCommitDate.getTime()) / (1000 * 60 * 60 * 24)
         );
         stats.statisticsPeriod = days === 0 ? '1 day' : `${days + 1} days`;
       }

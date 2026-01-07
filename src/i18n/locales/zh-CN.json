@@ -12,11 +12,11 @@
   "cli.option.config": "配置文件路径",
   "cli.option.verbose": "详细输出模式",
   "cli.option.lang": "输出语言（en, zh-CN）",
-  
+
   "loading.config": "🔍 正在加载配置...",
   "loading.activeUsers": "🔍 正在获取活跃用户...",
   "loading.analyzing": "🔍 正在分析提交历史...",
-  
+
   "info.timeRange": "📅 时间范围：{{since}} ~ {{until}}",
   "info.branches": "🌿 分支：{{branches}}",
   "info.allBranches": "所有分支",
@@ -24,13 +24,13 @@
   "info.foundCommits": "📝 找到 {{count}} 个提交，正在分析...",
   "info.analysisProgress": "   分析进度：{{current}}/{{total}}",
   "info.qualifyingCommits": "✅ 找到 {{count}} 个符合条件的提交（包含 OpenSpec 提案和代码变更）",
-  
+
   "warning.noCommits": "⚠️  未找到符合条件的提交",
   "warning.noQualifyingCommits": "⚠️  未找到同时包含 OpenSpec 提案和代码变更的提交",
   "warning.noBranches": "⚠️  未找到远程分支",
-  
+
   "error.prefix": "❌ 错误：",
-  
+
   "branch.fetching": "\n🔍 正在获取活跃分支...",
   "branch.selectMode": "您想如何选择分支？",
   "branch.mode.select": "从活跃分支中选择",
@@ -42,13 +42,13 @@
   "branch.customSeparator": "--- 自定义输入 ---",
   "branch.selected": "\n✓ 已选择的分支：",
   "branch.lastCommit": "最后提交：{{date}}",
-  
+
   "output.title": "\n📊 OpenSpec 统计报告\n",
   "output.timeRange": "时间范围：{{since}} ~ {{until}}\n",
   "output.branches": "分支：{{branches}}\n",
   "output.totalCommits": "总提交数：{{count}}\n\n",
   "output.proposals": "  提案：{{proposals}}\n",
-  
+
   "table.branch": "分支",
   "table.period": "周期",
   "table.commits": "提交数",
@@ -62,7 +62,7 @@
   "table.proposalsList": "提案列表",
   "table.proposalsCount": "提案数量",
   "table.totalDeduplicated": "总计（去重）",
-  
+
   "markdown.title": "# OpenSpec 统计报告\n\n",
   "markdown.timeRange": "**时间范围**：{{since}} ~ {{until}}\n\n",
   "markdown.branches": "**分支**：{{branches}}\n\n",

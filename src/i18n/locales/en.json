@@ -12,11 +12,11 @@
   "cli.option.config": "Configuration file path",
   "cli.option.verbose": "Verbose output mode",
   "cli.option.lang": "Language for output (en, zh-CN)",
-  
+
   "loading.config": "🔍 Loading configuration...",
   "loading.activeUsers": "🔍 Fetching active users...",
   "loading.analyzing": "🔍 Analyzing commit history...",
-  
+
   "info.timeRange": "📅 Time Range: {{since}} ~ {{until}}",
   "info.branches": "🌿 Branches: {{branches}}",
   "info.allBranches": "All branches",
@@ -24,13 +24,13 @@
   "info.foundCommits": "📝 Found {{count}} commits, analyzing...",
   "info.analysisProgress": "   Analysis progress: {{current}}/{{total}}",
   "info.qualifyingCommits": "✅ Found {{count}} qualifying commits (containing OpenSpec proposals and code changes)",
-  
+
   "warning.noCommits": "⚠️  No commits found matching the criteria",
   "warning.noQualifyingCommits": "⚠️  No commits found containing both OpenSpec proposals and code changes",
   "warning.noBranches": "⚠️  No remote branches found",
-  
+
   "error.prefix": "❌ Error:",
-  
+
   "branch.fetching": "\n🔍 Fetching active branches...",
   "branch.selectMode": "How would you like to select branches?",
   "branch.mode.select": "Select from active branches",
@@ -42,13 +42,13 @@
   "branch.customSeparator": "--- Custom input ---",
   "branch.selected": "\n✓ Selected branches:",
   "branch.lastCommit": "last commit: {{date}}",
-  
+
   "output.title": "\n📊 OpenSpec Statistics Report\n",
   "output.timeRange": "Time Range: {{since}} ~ {{until}}\n",
   "output.branches": "Branches: {{branches}}\n",
   "output.totalCommits": "Total Commits: {{count}}\n\n",
   "output.proposals": "  Proposals: {{proposals}}\n",
-  
+
   "table.branch": "Branch",
   "table.period": "Period",
   "table.commits": "Commits",
@@ -62,7 +62,7 @@
   "table.proposalsList": "Proposals List",
   "table.proposalsCount": "Proposals Count",
   "table.totalDeduplicated": "TOTAL (Deduplicated)",
-  
+
   "markdown.title": "# OpenSpec Statistics Report\n\n",
   "markdown.timeRange": "**Time Range**: {{since}} ~ {{until}}\n\n",
   "markdown.branches": "**Branches**: {{branches}}\n\n",

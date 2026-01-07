@@ -5,6 +5,7 @@
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
   "type": "module",
+  "packageManager": "pnpm@10.12.1",
   "bin": {
     "openspec-stat": "dist/esm/cli.js"
   },
@@ -14,7 +15,18 @@
     "build:deps": "father prebundle",
     "prepublishOnly": "father doctor && npm run build",
     "test:cli": "node dist/esm/cli.js --help",
-    "link:global": "npm link"
+    "link:global": "npm link",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "prepare": "husky",
+    "changeset": "changeset",
+    "changeset:add": "changeset add",
+    "version": "changeset version && git add . && git commit -m 'chore: version packages'",
+    "release": "pnpm run release:version && pnpm run release:tag",
+    "release:version": "pnpm changeset version && git add . && git commit -m 'chore: version packages' && git push origin main",
+    "release:tag": "git tag v$(node -p \"require('./package.json').version\") && git push origin v$(node -p \"require('./package.json').version\")"
   },
   "keywords": [
     "openspec",
@@ -43,8 +55,26 @@
     "access": "public"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "@types/node": "^25.0.3",
-    "father": "^4.6.13"
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "father": "^4.6.13",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx,json,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@inquirer/prompts": "^8.1.0",
