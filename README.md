@@ -18,6 +18,7 @@ A CLI tool for tracking team members' OpenSpec proposals and code changes in Git
 - ✅ Track only recently active members (default: 2 weeks)
 - ✅ Multiple output formats: Table, JSON, CSV, Markdown
 - ✅ Internationalization support: English and Chinese (简体中文)
+- ✅ **🆕 Multi-repository mode (BETA)** - Analyze multiple local/remote repositories in one run
 
 ## Installation
 
@@ -48,6 +49,28 @@ openspec-stat
 ```
 
 This will track commits in the default time range (yesterday 20:00 ~ today 20:00).
+
+### Multi-Repository Mode (BETA)
+
+⚠️ **Experimental Feature**: Multi-repository mode allows analyzing multiple repositories (local or remote) in a single run.
+
+```bash
+# Initialize multi-repo configuration (interactive wizard)
+openspec-stat init --multi
+
+# Run multi-repo analysis
+openspec-stat multi -c .openspec-stats.multi.json
+
+# Generate template
+openspec-stat init --template multi -o config.json
+```
+
+**Perfect for team managers who:**
+- Have local access to backend repos but not frontend repos
+- Need to track contributions across multiple repositories
+- Want combined statistics without running multiple commands
+
+See [Multi-Repository Guide](./MULTI_REPO_GUIDE.md) for detailed documentation.
 
 ### Command Line Options
 

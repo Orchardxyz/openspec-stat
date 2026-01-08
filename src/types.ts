@@ -94,3 +94,56 @@ export interface StatsResult {
   proposals: Map<string, ProposalStats>;
   totalCommits: number;
 }
+
+export interface RepositoryConfig {
+  name: string;
+  type: 'local' | 'remote';
+  path?: string;
+  url?: string;
+  cloneOptions?: {
+    depth?: number | null;
+    singleBranch?: boolean;
+  };
+  branches: string[];
+  enabled?: boolean;
+}
+
+export interface RemoteCacheConfig {
+  dir: string;
+  autoCleanup: boolean;
+  cleanupOnComplete: boolean;
+  cleanupOnError: boolean;
+}
+
+export interface ParallelismConfig {
+  maxConcurrent: number;
+  timeout: number;
+}
+
+export interface MultiRepoConfig extends Config {
+  mode: 'single-repo' | 'multi-repo';
+  repositories?: RepositoryConfig[];
+  remoteCache?: RemoteCacheConfig;
+  parallelism?: ParallelismConfig;
+}
+
+export interface RepositoryResult {
+  repository: string;
+  type: 'local' | 'remote';
+  path: string;
+  analyses: CommitAnalysis[];
+  success: boolean;
+  error?: string;
+}
+
+export interface MultiRepoStatsResult extends StatsResult {
+  repositories: string[];
+  repositoryDetails: Map<
+    string,
+    {
+      type: 'local' | 'remote';
+      commits: number;
+      error?: string;
+    }
+  >;
+}

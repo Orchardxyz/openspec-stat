@@ -1,0 +1,62 @@
+{
+  "mode": "multi-repo",
+  "repositories": [
+    {
+      "name": "backend-main",
+      "type": "local",
+      "path": "/path/to/local/backend-main",
+      "branches": ["origin/master", "origin/develop"],
+      "enabled": true
+    },
+    {
+      "name": "backend-service",
+      "type": "local",
+      "path": "../backend-service",
+      "branches": ["origin/main"],
+      "enabled": true
+    },
+    {
+      "name": "frontend-web",
+      "type": "remote",
+      "url": "git@github.com:company/frontend-web.git",
+      "branches": ["origin/master"],
+      "cloneOptions": {
+        "depth": null,
+        "singleBranch": false
+      },
+      "enabled": true
+    },
+    {
+      "name": "mobile-app",
+      "type": "remote",
+      "url": "git@github.com:company/mobile-app.git",
+      "branches": ["origin/main"],
+      "cloneOptions": {
+        "depth": null,
+        "singleBranch": false
+      },
+      "enabled": true
+    }
+  ],
+  "defaultSinceHours": -30,
+  "defaultUntilHours": 20,
+  "authorMapping": {
+    "john@company1.com": "John Doe",
+    "john@company2.com": "John Doe",
+    "jane.smith@email1.com": "Jane Smith",
+    "jane.smith@email2.com": "Jane Smith"
+  },
+  "openspecDir": "openspec/",
+  "excludeExtensions": [".md", ".txt", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".webp", ".bmp", ".pdf"],
+  "activeUserWeeks": 2,
+  "parallelism": {
+    "maxConcurrent": 3,
+    "timeout": 600000
+  },
+  "remoteCache": {
+    "dir": "/tmp/openspec-stat-cache",
+    "autoCleanup": true,
+    "cleanupOnComplete": true,
+    "cleanupOnError": true
+  }
+}

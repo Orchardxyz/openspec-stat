@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.3.0 (Upcoming)
+
+### Major Features
+
+- **🆕 Multi-Repository Mode (BETA)**: Analyze multiple repositories in a single run
+  - Support for both local and remote repositories
+  - Local repos: Direct analysis of repositories on your machine
+  - Remote repos: Automatic cloning and cleanup
+  - Full clone support (no depth limit) for accurate statistics
+  - Automatic cleanup of temporary directories
+  - Parallel processing with configurable concurrency
+  - Cross-repository author mapping
+  - Combined statistics across all repositories
+  - Interactive configuration wizard with `openspec-stat init --multi`
+  - New commands: `openspec-stat multi` and `openspec-stat init`
+  - Complete i18n support (English and Chinese)
+  - Comprehensive documentation in MULTI_REPO_GUIDE.md
+
+### Breaking Changes
+
+- None - Single-repository mode remains fully backward compatible
+
 ## 1.2.0
 
 ### Minor Changes
