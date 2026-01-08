@@ -3,6 +3,8 @@
 [![NPM version](https://img.shields.io/npm/v/openspec-stat.svg?style=flat)](https://npmjs.com/package/openspec-stat)
 [![NPM downloads](http://img.shields.io/npm/dm/openspec-stat.svg?style=flat)](https://npmjs.com/package/openspec-stat)
 
+English | [简体中文](./README.zh-CN.md)
+
 A CLI tool for tracking team members' OpenSpec proposals and code changes in Git repositories.
 
 ## Features
