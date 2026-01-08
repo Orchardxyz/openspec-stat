@@ -1,4 +1,4 @@
-import { CommitAnalysis, AuthorStats, StatsResult, Config } from './types.js';
+import { CommitAnalysis, AuthorStats, StatsResult, Config, ProposalStats } from './types.js';
 import { normalizeAuthor } from './config.js';
 
 export class StatsAggregator {
@@ -18,6 +18,7 @@ export class StatsAggregator {
     filterAuthor?: string
   ): StatsResult {
     const authorStatsMap = new Map<string, AuthorStats>();
+    const proposalStatsMap = new Map<string, ProposalStats>();
 
     for (const analysis of analyses) {
       const normalizedAuthor = normalizeAuthor(analysis.commit.author, this.config.authorMapping);
@@ -53,6 +54,33 @@ export class StatsAggregator {
 
       for (const proposal of analysis.openspecProposals) {
         stats.openspecProposals.add(proposal);
+
+        // Aggregate by proposal
+        let proposalStats = proposalStatsMap.get(proposal);
+        if (!proposalStats) {
+          proposalStats = {
+            proposal,
+            commits: 0,
+            contributors: new Set<string>(),
+            codeFilesChanged: 0,
+            additions: 0,
+            deletions: 0,
+            netChanges: 0,
+            commitHashes: new Set<string>(),
+          };
+          proposalStatsMap.set(proposal, proposalStats);
+        }
+
+        // Only count each commit once per proposal
+        if (!proposalStats.commitHashes.has(analysis.commit.hash)) {
+          proposalStats.commitHashes.add(analysis.commit.hash);
+          proposalStats.commits++;
+          proposalStats.contributors.add(normalizedAuthor);
+          proposalStats.codeFilesChanged += analysis.codeFiles.length;
+          proposalStats.additions += analysis.totalAdditions;
+          proposalStats.deletions += analysis.totalDeletions;
+          proposalStats.netChanges += analysis.netChanges;
+        }
       }
 
       if (!stats.lastCommitDate || analysis.commit.date > stats.lastCommitDate) {
@@ -114,6 +142,7 @@ export class StatsAggregator {
       timeRange: { since, until },
       branches: actualBranches.size > 0 ? Array.from(actualBranches) : branches,
       authors: authorStatsMap,
+      proposals: proposalStatsMap,
       totalCommits: analyses.length,
     };
   }

@@ -73,6 +73,17 @@ export interface BranchStats {
   netChanges: number;
 }
 
+export interface ProposalStats {
+  proposal: string;
+  commits: number;
+  contributors: Set<string>;
+  codeFilesChanged: number;
+  additions: number;
+  deletions: number;
+  netChanges: number;
+  commitHashes: Set<string>;
+}
+
 export interface StatsResult {
   timeRange: {
     since: Date;
@@ -80,5 +91,6 @@ export interface StatsResult {
   };
   branches: string[];
   authors: Map<string, AuthorStats>;
+  proposals: Map<string, ProposalStats>;
   totalCommits: number;
 }
