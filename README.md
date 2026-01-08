@@ -11,6 +11,7 @@ A CLI tool for tracking team members' OpenSpec proposals and code changes in Git
 
 - ✅ Track Git commits within specified time ranges
 - ✅ Identify commits containing both OpenSpec proposals and code changes
+- ✅ **Proposal-based statistics summary** - Aggregate statistics by proposal to avoid merge commit bias
 - ✅ Group statistics by author (commits, proposals, code changes)
 - ✅ Support multiple branches and wildcard filtering
 - ✅ Author name mapping (handle multiple Git accounts for the same person)
@@ -163,6 +164,11 @@ Statistics include:
 - **Deletions**: Lines of code deleted
 - **Net Changes**: Additions - Deletions
 
+The tool provides two perspectives:
+
+1. **Proposal Summary**: Aggregates statistics by proposal, showing total code changes per proposal and all contributors. This avoids statistical bias from merge commits.
+2. **Author Summary**: Groups statistics by contributor, showing individual author contributions.
+
 ## Output Formats
 
 ### Table Format (Default)
@@ -173,6 +179,16 @@ Time Range: 2024-01-01 00:00:00 ~ 2024-01-31 23:59:59
 Branches: origin/master
 Total Commits: 15
 
+📋 Proposal Summary (by proposal)
+┌──────────────┬─────────┬──────────────────┬────────────┬───────────┬───────────┬─────────────┐
+│ Proposal     │ Commits │ Contributors     │ Code Files │ Additions │ Deletions │ Net Changes │
+├──────────────┼─────────┼──────────────────┼────────────┼───────────┼───────────┼─────────────┤
+│ feature-123  │ 5       │ John Doe, Jane S.│ 30         │ +890      │ -234      │ +656        │
+│ feature-456  │ 3       │ John Doe         │ 15         │ +344      │ -100      │ +244        │
+└──────────────┴─────────┴──────────────────┴────────────┴───────────┴───────────┴─────────────┘
+  📊 Total: 2 proposals | 8 commits | 45 files | +1234/-334 lines (net: +900)
+
+👥 Author Summary (by contributor)
 ┌──────────┬─────────┬──────────────────┬────────────┬───────────┬───────────┬─────────────┐
 │ Author   │ Commits │ OpenSpec Proposals│ Code Files │ Additions │ Deletions │ Net Changes │
 ├──────────┼─────────┼──────────────────┼────────────┼───────────┼───────────┼─────────────┤
