@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.1
+
+### Bug Fixes
+
+- **🐛 Multi-Repo Time Range Options**: Fixed critical issue where `--since` and `--until` options were not working in multi-repository mode
+  - Root cause: Commander.js option conflict between parent command and `multi` subcommand
+  - Solution: Added `.enablePositionalOptions()` and `.passThroughOptions()` to properly handle subcommand options
+  - Now `--since` and `--until` work correctly for custom time ranges in multi-repo mode
+  - Both long form (`--since`, `--until`) and short form (`-s`, `-u`) now work as expected
+
 ## 1.3.0
 
 ### Major Features
@@ -25,6 +35,13 @@
   - Use `--show-contributors` flag to see detailed per-contributor statistics
   - Improves readability when analyzing large teams across multiple repositories
   - Applies to all output formats: table, JSON, CSV, and Markdown
+
+### Documentation
+
+- **📚 Multi-Repo Time Range Options**: Clarified `--since` and `--until` support in multi-repository mode
+  - Added examples in README.md and README.zh-CN.md showing time range usage
+  - Created MULTI_REPO_TIME_RANGE_EXAMPLE.md with comprehensive usage examples
+  - Note: This functionality was already implemented, just not well documented
 
 ### Bug Fixes
 

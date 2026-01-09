@@ -10,10 +10,14 @@ const program = new Command();
 program
   .name('openspec-stat')
   .description("Track team members' OpenSpec proposals and code changes in Git repositories")
-  .version('0.0.1');
+  .version('0.0.1')
+  .enablePositionalOptions()
+  .passThroughOptions();
 
+// Default command for single-repository mode (for backward compatibility)
 program
-  .option('-r, --repo <path>', 'Repository path', '.')
+  .argument('[repo]', 'Repository path', '.')
+  .option('-r, --repo <path>', 'Repository path (alternative)', '.')
   .option('-b, --branches <branches>', 'Branch list, comma-separated')
   .option('--no-interactive', 'Disable interactive branch selection')
   .option('-s, --since <datetime>', 'Start time (default: yesterday 20:00)')
@@ -26,8 +30,8 @@ program
   .option('-v, --verbose', 'Verbose output mode')
   .option('-l, --lang <language>', 'Language for output (en, zh-CN)', 'en')
   .option('--no-fetch', 'Skip fetching remote branches')
-  .action(async (options: CliOptions) => {
-    await runSingleRepoCommand(options);
+  .action(async (repo: string, options: CliOptions) => {
+    await runSingleRepoCommand({ ...options, repo: repo || options.repo || '.' });
   });
 
 program
