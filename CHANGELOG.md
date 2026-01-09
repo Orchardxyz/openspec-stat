@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+### Minor Changes
+
+- Multi-Repository Mode (BETA)
+
 ## 1.3.0 (Upcoming)
 
 ### Major Features
