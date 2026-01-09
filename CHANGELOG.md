@@ -18,6 +18,21 @@
   - Complete i18n support (English and Chinese)
   - Comprehensive documentation in MULTI_REPO_GUIDE.md
 
+### Enhancements
+
+- **🎯 Multi-Repo Output Control**: Add `--show-contributors` option for multi-repository mode
+  - Default behavior now shows aggregated summary only (to avoid information overload)
+  - Use `--show-contributors` flag to see detailed per-contributor statistics
+  - Improves readability when analyzing large teams across multiple repositories
+  - Applies to all output formats: table, JSON, CSV, and Markdown
+
+### Bug Fixes
+
+- **🐛 Multi-Repo Process Exit**: Fixed issue where multi-repository mode didn't exit automatically after completion
+  - Removed `uncaughtException` listener that prevented normal process exit
+  - Changed event listeners to use `once()` instead of `on()` for SIGINT/SIGTERM
+  - Process now exits cleanly after displaying statistics
+
 ### Breaking Changes
 
 - None - Single-repository mode remains fully backward compatible

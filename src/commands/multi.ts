@@ -20,6 +20,7 @@ interface MultiCommandOptions {
   verbose?: boolean;
   lang?: string;
   cleanup?: boolean;
+  showContributors?: boolean;
 }
 
 export async function runMultiRepoCommand(options: MultiCommandOptions) {
@@ -138,15 +139,16 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
     const result = aggregator.aggregate(allAnalyses, since, until, allBranches, options.author);
 
     const formatter = new OutputFormatter();
+    const showContributors = options.showContributors || false;
 
     if (options.json) {
-      console.log(formatter.formatJSON(result));
+      console.log(formatter.formatJSON(result, showContributors));
     } else if (options.csv) {
-      console.log(formatter.formatCSV(result));
+      console.log(formatter.formatCSV(result, showContributors));
     } else if (options.markdown) {
-      console.log(formatter.formatMarkdown(result));
+      console.log(formatter.formatMarkdown(result, showContributors));
     } else {
-      console.log(formatter.formatTable(result, options.verbose));
+      console.log(formatter.formatTable(result, options.verbose, showContributors));
     }
   } catch (error) {
     console.error(chalk.red(t('error.prefix')), error);

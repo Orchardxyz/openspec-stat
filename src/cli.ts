@@ -42,6 +42,7 @@ program
   .option('-v, --verbose', 'Verbose output mode')
   .option('-l, --lang <language>', 'Language (en, zh-CN)', 'en')
   .option('--no-cleanup', 'Do not cleanup temporary directories')
+  .option('--show-contributors', 'Show detailed contributor statistics (default: only show summary)')
   .action(async (options) => {
     await runMultiRepoCommand(options);
   });

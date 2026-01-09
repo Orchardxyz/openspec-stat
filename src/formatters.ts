@@ -4,7 +4,7 @@ import { StatsResult } from './types.js';
 import { t } from './i18n/index.js';
 
 export class OutputFormatter {
-  formatTable(result: StatsResult, verbose: boolean = false): string {
+  formatTable(result: StatsResult, verbose: boolean = false, showContributors: boolean = true): string {
     let output = '';
     output += chalk.bold(t('output.title'));
     output += chalk.gray(
@@ -77,6 +77,48 @@ export class OutputFormatter {
 
     output += chalk.bold.cyan(`\n${t('output.authorSummary')}\n`);
     const sortedAuthors = Array.from(result.authors.values()).sort((a, b) => b.commits - a.commits);
+
+    if (!showContributors) {
+      // Show only summary when showContributors is false
+      const totalAuthors = sortedAuthors.length;
+      const totalCommits = sortedAuthors.reduce((sum, s) => sum + s.commits, 0);
+      const totalProposalsSet = new Set<string>();
+      sortedAuthors.forEach((s) => s.openspecProposals.forEach((p) => totalProposalsSet.add(p)));
+      const totalFiles = sortedAuthors.reduce((sum, s) => sum + s.codeFilesChanged, 0);
+      const totalAdditions = sortedAuthors.reduce((sum, s) => sum + s.additions, 0);
+      const totalDeletions = sortedAuthors.reduce((sum, s) => sum + s.deletions, 0);
+      const totalNetChanges = sortedAuthors.reduce((sum, s) => sum + s.netChanges, 0);
+
+      const summaryTable = new Table({
+        head: [
+          chalk.cyan(t('table.contributors')),
+          chalk.cyan(t('table.commits')),
+          chalk.cyan(t('table.proposals')),
+          chalk.cyan(t('table.codeFiles')),
+          chalk.cyan(t('table.additions')),
+          chalk.cyan(t('table.deletions')),
+          chalk.cyan(t('table.netChanges')),
+        ],
+        style: {
+          head: [],
+          border: [],
+        },
+      });
+
+      summaryTable.push([
+        totalAuthors.toString(),
+        totalCommits.toString(),
+        totalProposalsSet.size.toString(),
+        totalFiles.toString(),
+        chalk.green(`+${totalAdditions}`),
+        chalk.red(`-${totalDeletions}`),
+        totalNetChanges >= 0 ? chalk.green(`+${totalNetChanges}`) : chalk.red(`${totalNetChanges}`),
+      ]);
+
+      output += summaryTable.toString() + '\n';
+      output += chalk.gray(t('output.contributorHint')) + '\n';
+      return output;
+    }
 
     for (const stats of sortedAuthors) {
       output += chalk.bold.cyan(`\n${stats.author}\n`);
@@ -163,8 +205,10 @@ export class OutputFormatter {
     return output;
   }
 
-  formatJSON(result: StatsResult): string {
-    const data = {
+  formatJSON(result: StatsResult, showContributors: boolean = true): string {
+    const sortedAuthors = Array.from(result.authors.values());
+
+    const data: any = {
       timeRange: {
         since: result.timeRange.since.toISOString(),
         until: result.timeRange.until.toISOString(),
@@ -191,7 +235,10 @@ export class OutputFormatter {
           totalNetChanges: Array.from(result.proposals.values()).reduce((sum, p) => sum + p.netChanges, 0),
         },
       },
-      authors: Array.from(result.authors.values()).map((stats) => ({
+    };
+
+    if (showContributors) {
+      data.authors = sortedAuthors.map((stats) => ({
         author: stats.author,
         commits: stats.commits,
         openspecProposals: Array.from(stats.openspecProposals),
@@ -201,13 +248,26 @@ export class OutputFormatter {
         deletions: stats.deletions,
         netChanges: stats.netChanges,
         lastCommitDate: stats.lastCommitDate?.toISOString(),
-      })),
-    };
+      }));
+    } else {
+      const totalProposalsSet = new Set<string>();
+      sortedAuthors.forEach((s) => s.openspecProposals.forEach((p) => totalProposalsSet.add(p)));
+
+      data.authorsSummary = {
+        totalContributors: sortedAuthors.length,
+        totalCommits: sortedAuthors.reduce((sum, s) => sum + s.commits, 0),
+        totalProposals: totalProposalsSet.size,
+        totalCodeFiles: sortedAuthors.reduce((sum, s) => sum + s.codeFilesChanged, 0),
+        totalAdditions: sortedAuthors.reduce((sum, s) => sum + s.additions, 0),
+        totalDeletions: sortedAuthors.reduce((sum, s) => sum + s.deletions, 0),
+        totalNetChanges: sortedAuthors.reduce((sum, s) => sum + s.netChanges, 0),
+      };
+    }
 
     return JSON.stringify(data, null, 2);
   }
 
-  formatCSV(result: StatsResult): string {
+  formatCSV(result: StatsResult, showContributors: boolean = true): string {
     const rows: string[] = [];
 
     // Proposal summary section
@@ -252,34 +312,59 @@ export class OutputFormatter {
 
     // Author summary section
     rows.push(`\n# ${t('output.authorSummary')}`);
-    rows.push(
-      `${t('table.author')},${t('table.period')},${t('table.commits')},${t('table.proposalsCount')},${t('table.proposalsList')},${t('table.codeFiles')},${t('table.additions')},${t('table.deletions')},${t('table.netChanges')},${t('table.lastCommitDate')}`
-    );
 
     const sortedAuthors = Array.from(result.authors.values()).sort((a, b) => b.commits - a.commits);
 
-    for (const stats of sortedAuthors) {
-      const proposals = Array.from(stats.openspecProposals).join(';');
+    if (showContributors) {
+      rows.push(
+        `${t('table.author')},${t('table.period')},${t('table.commits')},${t('table.proposalsCount')},${t('table.proposalsList')},${t('table.codeFiles')},${t('table.additions')},${t('table.deletions')},${t('table.netChanges')},${t('table.lastCommitDate')}`
+      );
+
+      for (const stats of sortedAuthors) {
+        const proposals = Array.from(stats.openspecProposals).join(';');
+        rows.push(
+          [
+            stats.author,
+            stats.statisticsPeriod || '-',
+            stats.commits,
+            stats.openspecProposals.size,
+            `"${proposals}"`,
+            stats.codeFilesChanged,
+            stats.additions,
+            stats.deletions,
+            stats.netChanges,
+            stats.lastCommitDate?.toISOString() || '',
+          ].join(',')
+        );
+      }
+    } else {
+      rows.push(
+        `${t('table.contributors')},${t('table.commits')},${t('table.proposals')},${t('table.codeFiles')},${t('table.additions')},${t('table.deletions')},${t('table.netChanges')}`
+      );
+
+      const totalProposalsSet = new Set<string>();
+      sortedAuthors.forEach((s) => s.openspecProposals.forEach((p) => totalProposalsSet.add(p)));
+
       rows.push(
         [
-          stats.author,
-          stats.statisticsPeriod || '-',
-          stats.commits,
-          stats.openspecProposals.size,
-          `"${proposals}"`,
-          stats.codeFilesChanged,
-          stats.additions,
-          stats.deletions,
-          stats.netChanges,
-          stats.lastCommitDate?.toISOString() || '',
+          sortedAuthors.length,
+          sortedAuthors.reduce((sum, s) => sum + s.commits, 0),
+          totalProposalsSet.size,
+          sortedAuthors.reduce((sum, s) => sum + s.codeFilesChanged, 0),
+          sortedAuthors.reduce((sum, s) => sum + s.additions, 0),
+          sortedAuthors.reduce((sum, s) => sum + s.deletions, 0),
+          sortedAuthors.reduce((sum, s) => sum + s.netChanges, 0),
         ].join(',')
       );
+
+      rows.push('');
+      rows.push(`# ${t('output.contributorHint')}`);
     }
 
     return rows.join('\n');
   }
 
-  formatMarkdown(result: StatsResult): string {
+  formatMarkdown(result: StatsResult, showContributors: boolean = true): string {
     let md = '';
     md += t('markdown.title');
     md += t('markdown.timeRange', {
@@ -319,24 +404,43 @@ export class OutputFormatter {
 
     // Author summary
     md += `\n## ${t('output.authorSummary')}\n\n`;
-    md += `| ${t('table.author')} | ${t('table.period')} | ${t('table.commits')} | ${t('table.proposals')} | ${t('table.codeFiles')} | ${t('table.additions')} | ${t('table.deletions')} | ${t('table.netChanges')} |\n`;
-    md += '|--------|--------|---------|-----------|------------|-----------|-----------|-------------|\n';
 
     const sortedAuthors = Array.from(result.authors.values()).sort((a, b) => b.commits - a.commits);
 
-    for (const stats of sortedAuthors) {
-      md += `| ${stats.author} | ${stats.statisticsPeriod || '-'} | ${stats.commits} | ${stats.openspecProposals.size} | ${stats.codeFilesChanged} | +${stats.additions} | -${stats.deletions} | ${stats.netChanges >= 0 ? '+' : ''}${stats.netChanges} |\n`;
-    }
+    if (showContributors) {
+      md += `| ${t('table.author')} | ${t('table.period')} | ${t('table.commits')} | ${t('table.proposals')} | ${t('table.codeFiles')} | ${t('table.additions')} | ${t('table.deletions')} | ${t('table.netChanges')} |\n`;
+      md += '|--------|--------|---------|-----------|------------|-----------|-----------|-------------|\n';
 
-    md += t('markdown.proposalDetails');
-    for (const stats of sortedAuthors) {
-      if (stats.openspecProposals.size > 0) {
-        md += `### ${stats.author}\n\n`;
-        for (const proposal of Array.from(stats.openspecProposals)) {
-          md += `- ${proposal}\n`;
-        }
-        md += '\n';
+      for (const stats of sortedAuthors) {
+        md += `| ${stats.author} | ${stats.statisticsPeriod || '-'} | ${stats.commits} | ${stats.openspecProposals.size} | ${stats.codeFilesChanged} | +${stats.additions} | -${stats.deletions} | ${stats.netChanges >= 0 ? '+' : ''}${stats.netChanges} |\n`;
       }
+
+      md += t('markdown.proposalDetails');
+      for (const stats of sortedAuthors) {
+        if (stats.openspecProposals.size > 0) {
+          md += `### ${stats.author}\n\n`;
+          for (const proposal of Array.from(stats.openspecProposals)) {
+            md += `- ${proposal}\n`;
+          }
+          md += '\n';
+        }
+      }
+    } else {
+      md += `| ${t('table.contributors')} | ${t('table.commits')} | ${t('table.proposals')} | ${t('table.codeFiles')} | ${t('table.additions')} | ${t('table.deletions')} | ${t('table.netChanges')} |\n`;
+      md += '|------------|---------|-----------|------------|-----------|-----------|-------------|\n';
+
+      const totalProposalsSet = new Set<string>();
+      sortedAuthors.forEach((s) => s.openspecProposals.forEach((p) => totalProposalsSet.add(p)));
+
+      const totalAuthors = sortedAuthors.length;
+      const totalCommits = sortedAuthors.reduce((sum, s) => sum + s.commits, 0);
+      const totalFiles = sortedAuthors.reduce((sum, s) => sum + s.codeFilesChanged, 0);
+      const totalAdditions = sortedAuthors.reduce((sum, s) => sum + s.additions, 0);
+      const totalDeletions = sortedAuthors.reduce((sum, s) => sum + s.deletions, 0);
+      const totalNetChanges = sortedAuthors.reduce((sum, s) => sum + s.netChanges, 0);
+
+      md += `| ${totalAuthors} | ${totalCommits} | ${totalProposalsSet.size} | ${totalFiles} | +${totalAdditions} | -${totalDeletions} | ${totalNetChanges >= 0 ? '+' : ''}${totalNetChanges} |\n`;
+      md += `\n*${t('output.contributorHint')}*\n`;
     }
 
     return md;

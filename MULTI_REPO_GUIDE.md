@@ -127,17 +127,42 @@ Use for repositories to clone from remote:
 openspec-stat multi [options]
 
 Options:
-  -c, --config <path>     Configuration file path (default: .openspec-stats.multi.json)
-  -s, --since <datetime>  Override start time
-  -u, --until <datetime>  Override end time
-  -a, --author <name>     Filter by specific author
-  --json                  Output in JSON format
-  --csv                   Output in CSV format
-  --markdown              Output in Markdown format
-  -v, --verbose           Verbose output mode
-  -l, --lang <language>   Language (en, zh-CN)
-  --no-cleanup            Do not cleanup temporary directories
+  -c, --config <path>        Configuration file path (default: .openspec-stats.multi.json)
+  -s, --since <datetime>     Override start time
+  -u, --until <datetime>     Override end time
+  -a, --author <name>        Filter by specific author
+  --json                     Output in JSON format
+  --csv                      Output in CSV format
+  --markdown                 Output in Markdown format
+  -v, --verbose              Verbose output mode
+  -l, --lang <language>      Language (en, zh-CN)
+  --no-cleanup               Do not cleanup temporary directories
+  --show-contributors        Show detailed contributor statistics
 ```
+
+### Output Control
+
+By default, multi-repository mode only shows **aggregated summary statistics** to avoid information overload when analyzing multiple repositories. This shows total commits, proposals, and code changes across all contributors.
+
+To see **detailed statistics for each contributor**, use the `--show-contributors` flag:
+
+```bash
+# Default: Show only aggregated summary
+openspec-stat multi -c config.json
+
+# Show detailed per-contributor statistics
+openspec-stat multi -c config.json --show-contributors
+```
+
+**When to use `--show-contributors`:**
+- When analyzing a small team (< 10 contributors)
+- When you need detailed breakdown by contributor
+- When generating reports that require individual statistics
+
+**Default behavior (without `--show-contributors`):**
+- Shows total number of contributors
+- Shows aggregated commits, proposals, and code changes
+- Keeps output concise and readable
 
 ## Use Cases
 
@@ -182,10 +207,18 @@ Run daily at 20:00 to collect yesterday's statistics:
 ### Case 3: Weekly Cross-Team Report
 
 ```bash
+# Summary report (for management)
 openspec-stat multi -c config.json \
   --since "2024-01-01 20:00:00" \
   --until "2024-01-08 20:00:00" \
-  --markdown > weekly-report.md
+  --markdown > weekly-summary.md
+
+# Detailed report (with per-contributor breakdown)
+openspec-stat multi -c config.json \
+  --since "2024-01-01 20:00:00" \
+  --until "2024-01-08 20:00:00" \
+  --show-contributors \
+  --markdown > weekly-detailed.md
 ```
 
 ## Performance Tips

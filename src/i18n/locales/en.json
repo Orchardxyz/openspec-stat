@@ -52,6 +52,7 @@
   "output.proposalTotal": "  📊 Total: {{count}} proposals | {{commits}} commits | {{files}} files | +{{additions}}/-{{deletions}} lines (net: {{netChanges}})\n",
   "output.proposalTotalLabel": "Proposal Summary Total",
   "output.authorSummary": "👥 Author Summary (by contributor)",
+  "output.contributorHint": "💡 Use --show-contributors to see detailed statistics for each contributor",
 
   "table.branch": "Branch",
   "table.period": "Period",

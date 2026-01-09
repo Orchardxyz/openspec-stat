@@ -193,27 +193,25 @@ export class MultiRepoAnalyzer {
   }
 
   registerCleanupHandlers() {
-    const cleanup = () => {
+    const cleanup = async () => {
       if (this.config.remoteCache?.autoCleanup) {
-        this.cleanupTempDirs();
+        await this.cleanupTempDirs();
       }
     };
 
-    process.on('exit', cleanup);
-    process.on('SIGINT', () => {
-      cleanup();
+    // Only register handlers for interrupt signals
+    // Using once() to ensure handlers don't prevent normal exit
+    process.once('SIGINT', async () => {
+      await cleanup();
       process.exit(130);
     });
-    process.on('SIGTERM', () => {
-      cleanup();
+
+    process.once('SIGTERM', async () => {
+      await cleanup();
       process.exit(143);
     });
-    process.on('uncaughtException', (error) => {
-      console.error('Uncaught exception:', error);
-      if (this.config.remoteCache?.cleanupOnError) {
-        cleanup();
-      }
-      process.exit(1);
-    });
+
+    // Note: We don't register uncaughtException handler as it prevents normal process exit
+    // Cleanup will still happen via cleanupOnComplete in analyzeAll()
   }
 }

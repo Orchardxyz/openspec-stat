@@ -61,6 +61,9 @@ openspec-stat init --multi
 # Run multi-repo analysis
 openspec-stat multi -c .openspec-stats.multi.json
 
+# Run with detailed contributor statistics
+openspec-stat multi -c .openspec-stats.multi.json --show-contributors
+
 # Generate template
 openspec-stat init --template multi -o config.json
 ```
@@ -69,6 +72,8 @@ openspec-stat init --template multi -o config.json
 - Have local access to backend repos but not frontend repos
 - Need to track contributions across multiple repositories
 - Want combined statistics without running multiple commands
+
+**Note**: By default, multi-repo mode only shows aggregated statistics to avoid information overload. Use `--show-contributors` to see detailed statistics for each contributor.
 
 See [Multi-Repository Guide](./MULTI_REPO_GUIDE.md) for detailed documentation.
 
