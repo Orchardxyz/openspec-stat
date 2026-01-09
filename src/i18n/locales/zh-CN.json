@@ -16,6 +16,7 @@
   "loading.config": "🔍 正在加载配置...",
   "loading.activeUsers": "🔍 正在获取活跃用户...",
   "loading.analyzing": "🔍 正在分析提交历史...",
+  "loading.fetching": "🔄 正在拉取远程分支...",
 
   "info.timeRange": "📅 时间范围：{{since}} ~ {{until}}",
   "info.branches": "🌿 分支：{{branches}}",
@@ -82,6 +83,7 @@
   "multi.loading.config": "🔍 正在加载多仓库配置...",
   "multi.repo.cloning": "☁️  正在克隆 {{repo}}...",
   "multi.repo.cloned": "✅ 成功克隆 {{repo}}",
+  "multi.repo.fetching": "🔄 正在拉取 {{repo}} 的远程分支...",
   "multi.repo.analyzing": "📊 正在分析 {{repo}} ({{type}})...",
   "multi.repo.completed": "✅ 完成 {{repo}}：{{commits}} 次提交",
   "multi.repo.failed": "❌ 失败 {{repo}}：{{error}}",

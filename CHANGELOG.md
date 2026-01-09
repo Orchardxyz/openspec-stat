@@ -28,6 +28,11 @@
 
 ### Bug Fixes
 
+- **🐛 Auto-Fetch Remote Branches**: Fixed issue where local repositories were not fetching remote branches before analysis
+  - Added automatic `git fetch` for local repositories to ensure data is up-to-date
+  - Applies to both single-repo and multi-repo modes
+  - Can be disabled with `--no-fetch` CLI option or `autoFetch: false` in config
+  - Prevents stale data when analyzing local repositories
 - **🐛 Multi-Repo Process Exit**: Fixed issue where multi-repository mode didn't exit automatically after completion
   - Removed `uncaughtException` listener that prevented normal process exit
   - Changed event listeners to use `once()` instead of `on()` for SIGINT/SIGTERM

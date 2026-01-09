@@ -11,6 +11,15 @@ export class GitAnalyzer {
     this.config = config;
   }
 
+  async fetchRemote(): Promise<void> {
+    try {
+      await this.git.fetch();
+    } catch (error) {
+      // Silently ignore fetch errors (e.g., no remote, network issues)
+      // The analysis will continue with local data
+    }
+  }
+
   async getCommits(since: Date, until: Date, branches: string[]): Promise<CommitInfo[]> {
     const sinceStr = since.toISOString();
     const untilStr = until.toISOString();

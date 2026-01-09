@@ -63,6 +63,13 @@ export class MultiRepoAnalyzer {
       }
 
       const analyzer = new GitAnalyzer(repoPath, this.config);
+
+      // Fetch remote branches for local repositories to ensure data is up-to-date
+      if (repo.type === 'local' && this.config.autoFetch !== false) {
+        console.log(chalk.cyan(t('multi.repo.fetching', { repo: repo.name })));
+        await analyzer.fetchRemote();
+      }
+
       const commits = await analyzer.getCommits(since, until, repo.branches);
 
       const analyses: CommitAnalysis[] = [];

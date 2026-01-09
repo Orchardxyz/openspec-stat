@@ -25,6 +25,7 @@ program
   .option('-c, --config <path>', 'Configuration file path')
   .option('-v, --verbose', 'Verbose output mode')
   .option('-l, --lang <language>', 'Language for output (en, zh-CN)', 'en')
+  .option('--no-fetch', 'Skip fetching remote branches')
   .action(async (options: CliOptions) => {
     await runSingleRepoCommand(options);
   });
@@ -43,6 +44,7 @@ program
   .option('-l, --lang <language>', 'Language (en, zh-CN)', 'en')
   .option('--no-cleanup', 'Do not cleanup temporary directories')
   .option('--show-contributors', 'Show detailed contributor statistics (default: only show summary)')
+  .option('--no-fetch', 'Skip fetching remote branches for local repositories')
   .action(async (options) => {
     await runMultiRepoCommand(options);
   });

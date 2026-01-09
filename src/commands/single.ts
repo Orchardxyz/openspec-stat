@@ -58,6 +58,12 @@ export async function runSingleRepoCommand(options: CliOptions) {
 
     const analyzer = new GitAnalyzer(options.repo, config);
 
+    // Fetch remote branches to ensure data is up-to-date
+    if (!options.noFetch && config.autoFetch !== false) {
+      console.log(chalk.blue(t('loading.fetching')));
+      await analyzer.fetchRemote();
+    }
+
     console.log(chalk.blue(t('loading.activeUsers')));
     const activeAuthors = await analyzer.getActiveAuthors(config.activeUserWeeks || 2);
 

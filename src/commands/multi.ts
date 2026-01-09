@@ -21,6 +21,7 @@ interface MultiCommandOptions {
   lang?: string;
   cleanup?: boolean;
   showContributors?: boolean;
+  noFetch?: boolean;
 }
 
 export async function runMultiRepoCommand(options: MultiCommandOptions) {
@@ -81,6 +82,11 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
         cleanupOnError: false,
       };
       config.remoteCache.cleanupOnComplete = false;
+    }
+
+    // Handle --no-fetch option
+    if (options.noFetch) {
+      config.autoFetch = false;
     }
 
     const repoResults = await analyzer.analyzeAll(since, until);

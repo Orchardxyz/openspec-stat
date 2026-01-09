@@ -16,6 +16,7 @@
   "loading.config": "🔍 Loading configuration...",
   "loading.activeUsers": "🔍 Fetching active users...",
   "loading.analyzing": "🔍 Analyzing commit history...",
+  "loading.fetching": "🔄 Fetching remote branches...",
 
   "info.timeRange": "📅 Time Range: {{since}} ~ {{until}}",
   "info.branches": "🌿 Branches: {{branches}}",
@@ -82,6 +83,7 @@
   "multi.loading.config": "🔍 Loading multi-repository configuration...",
   "multi.repo.cloning": "☁️  Cloning {{repo}}...",
   "multi.repo.cloned": "✅ Successfully cloned {{repo}}",
+  "multi.repo.fetching": "🔄 Fetching remote branches for {{repo}}...",
   "multi.repo.analyzing": "📊 Analyzing {{repo}} ({{type}})...",
   "multi.repo.completed": "✅ Completed {{repo}}: {{commits}} commits",
   "multi.repo.failed": "❌ Failed {{repo}}: {{error}}",

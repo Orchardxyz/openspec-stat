@@ -7,6 +7,7 @@ export interface Config {
   codeFileExtensions?: string[];
   excludeExtensions?: string[];
   activeUserWeeks?: number;
+  autoFetch?: boolean;
 }
 
 export interface CliOptions {
@@ -22,6 +23,7 @@ export interface CliOptions {
   verbose?: boolean;
   interactive?: boolean;
   lang?: string;
+  noFetch?: boolean;
 }
 
 export interface CommitInfo {
