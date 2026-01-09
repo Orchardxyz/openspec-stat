@@ -10,6 +10,14 @@
   - Now `--since` and `--until` work correctly for custom time ranges in multi-repo mode
   - Both long form (`--since`, `--until`) and short form (`-s`, `-u`) now work as expected
 
+### Internal Improvements
+
+- **⚡ Build-time Version Injection**: Optimized version number handling by injecting it at build time instead of runtime
+  - Added `define` configuration in `.fatherrc.ts` to inject version from `package.json` during build
+  - Removed runtime file I/O operations for reading `package.json` in `cli.ts`
+  - Version is now injected as `process.env.CLI_VERSION` at build time, improving startup performance
+  - Build output now contains the version string directly, eliminating runtime overhead
+
 ## 1.3.0
 
 ### Major Features

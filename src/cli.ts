@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name('openspec-stat')
   .description("Track team members' OpenSpec proposals and code changes in Git repositories")
-  .version('0.0.1')
+  .version(process.env.CLI_VERSION!)
   .enablePositionalOptions()
   .passThroughOptions();
 
