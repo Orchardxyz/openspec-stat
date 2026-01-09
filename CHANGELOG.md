@@ -2,6 +2,12 @@
 
 ## 1.3.1
 
+### Patch Changes
+
+- Fix bugs
+
+## 1.3.1
+
 ### Bug Fixes
 
 - **🐛 Multi-Repo Time Range Options**: Fixed critical issue where `--since` and `--until` options were not working in multi-repository mode
