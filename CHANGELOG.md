@@ -1,10 +1,20 @@
 # Changelog
 
-## 1.3.1
+## 1.3.2
 
 ### Patch Changes
 
-- Fix bugs
+- Merge Commit Deduplication
+
+## 1.3.2
+
+### Bug Fixes
+
+- **🔧 Merge Commit Deduplication**: Fixed issue where merge commits caused duplicate statistics
+  - Root cause: Merge commits contain all changes from merged branches, causing double-counting
+  - Solution: Added `--no-merges` flag to git log to exclude merge commits from analysis
+  - This prevents counting the same code changes and proposal associations twice
+  - Only direct commits (non-merge) are now included in statistics, providing accurate metrics
 
 ## 1.3.1
 

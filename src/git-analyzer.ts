@@ -27,6 +27,7 @@ export class GitAnalyzer {
     const logOptions: any = {
       '--since': sinceStr,
       '--until': untilStr,
+      '--no-merges': null, // 排除 merge commits 避免重复统计
     };
 
     if (branches.length > 0) {
