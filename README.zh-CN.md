@@ -18,6 +18,7 @@
 - ✅ 仅追踪最近活跃的成员（默认：2 周）
 - ✅ 多种输出格式：表格、JSON、CSV、Markdown
 - ✅ 国际化支持：英文和中文
+- ✅ **🆕 多仓库模式（BETA）** - 一次运行分析多个本地/远程仓库
 
 ## 安装
 
@@ -48,6 +49,33 @@ openspec-stat
 ```
 
 这将追踪默认时间范围内的提交（昨天 20:00 ~ 今天 20:00）。
+
+### 多仓库模式（BETA）
+
+⚠️ **实验性功能**：多仓库模式允许在单次运行中分析多个仓库（本地或远程）。
+
+```bash
+# 初始化多仓库配置（交互式向导）
+openspec-stat init --multi
+
+# 运行多仓库分析
+openspec-stat multi -c .openspec-stats.multi.json
+
+# 运行并显示详细的贡献者统计
+openspec-stat multi -c .openspec-stats.multi.json --show-contributors
+
+# 生成配置模板
+openspec-stat init --template multi -o config.json
+```
+
+**适用于以下场景的团队管理者：**
+- 拥有后端仓库的本地访问权限，但没有前端仓库
+- 需要跨多个仓库追踪贡献情况
+- 希望获得合并统计结果，而无需运行多个命令
+
+**注意**：默认情况下，多仓库模式仅显示聚合统计信息，以避免信息过载。使用 `--show-contributors` 可查看每个贡献者的详细统计信息。
+
+详细文档请参阅 [多仓库模式指南](./MULTI_REPO_GUIDE.md)。
 
 ### 命令行选项
 
