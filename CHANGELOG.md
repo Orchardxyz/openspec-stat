@@ -2,12 +2,6 @@
 
 ## 1.3.0
 
-### Minor Changes
-
-- Multi-Repository Mode (BETA)
-
-## 1.3.0 (Upcoming)
-
 ### Major Features
 
 - **🆕 Multi-Repository Mode (BETA)**: Analyze multiple repositories in a single run
