@@ -29,6 +29,7 @@
   "warning.noCommits": "⚠️  未找到符合条件的提交",
   "warning.noQualifyingCommits": "⚠️  未找到同时包含 OpenSpec 提案和代码变更的提交",
   "warning.noBranches": "⚠️  未找到远程分支",
+  "warning.noBranchesSelected": "⚠️  未选择任何分支。请至少选择一个分支进行分析。",
 
   "error.prefix": "❌ 错误：",
 
