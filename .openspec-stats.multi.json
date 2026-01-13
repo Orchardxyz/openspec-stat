@@ -1,0 +1,36 @@
+{
+  "mode": "multi-repo",
+  "repositories": [
+    {
+      "name": "公证核心",
+      "type": "local",
+      "branches": ["origin/release/20251231"],
+      "path": "/Users/orchard/work/public-notarial-fe"
+    },
+    {
+      "name": "公证后端",
+      "type": "remote",
+      "branches": ["origin/release/20260115"],
+      "url": "git@codeup.aliyun.com:dayu/public_notarization_app/public-notarial-be.git",
+      "cloneOptions": {
+        "depth": null
+      }
+    }
+  ],
+  "defaultSinceHours": -30,
+  "defaultUntilHours": 20,
+  "openspecDir": "openspec/",
+  "excludeExtensions": [".md", ".txt", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".webp"],
+  "activeUserWeeks": 2,
+  "authorMapping": {},
+  "parallelism": {
+    "maxConcurrent": 3,
+    "timeout": 600000
+  },
+  "remoteCache": {
+    "dir": "/tmp/openspec-stat-cache",
+    "autoCleanup": true,
+    "cleanupOnComplete": true,
+    "cleanupOnError": true
+  }
+}
