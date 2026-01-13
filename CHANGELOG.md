@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.3
+
+### Patch Changes
+
+- 5957fa4: chore: migrate to npm trusted publishing and automate releases
+
 ## 1.3.2
 
 ### Patch Changes
