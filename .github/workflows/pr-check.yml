@@ -19,9 +19,31 @@ jobs:
 
       - name: Check for changeset
         run: |
-          if [ ! -d ".changeset" ] || [ -z "$(ls -A .changeset/*.md 2>/dev/null | grep -v 'README.md')" ]; then
-            echo "::error::No changeset found. Please run 'pnpm changeset:add' to add a changeset."
-            exit 1
+          # Check 1: Skip if PR has 'skip-changeset' label
+          if echo '${{ toJson(github.event.pull_request.labels.*.name) }}' | grep -q 'skip-changeset'; then
+            echo "⏭️  Skipping changeset check (skip-changeset label found)"
+            exit 0
+          fi
+          
+          # Check 2: Auto-skip for documentation/config only changes
+          git fetch origin ${{ github.base_ref }} --depth=1
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          
+          # Paths that don't require changeset (docs, config, CI, markdown files)
+          SKIP_PATTERN="^(README|CHANGELOG|LICENSE|\.github/|docs/|\.md$|\.txt$|\.gitignore|\.npmrc|\.prettierrc|\.eslintrc|\.editorconfig)"
+          
+          # Check if there are any files NOT matching skip pattern
+          if echo "$CHANGED_FILES" | grep -vE "$SKIP_PATTERN" > /dev/null 2>&1; then
+            # Has code changes, require changeset
+            if [ ! -d ".changeset" ] || [ -z "$(ls -A .changeset/*.md 2>/dev/null | grep -v 'README.md')" ]; then
+              echo "::error::No changeset found. Code changes require a changeset. Run 'pnpm changeset:add' or add 'skip-changeset' label to skip."
+              exit 1
+            else
+              echo "✅ Changeset found for code changes"
+            fi
           else
-            echo "✅ Changeset found"
+            echo "⏭️  Only documentation/config changes detected, skipping changeset check"
           fi
