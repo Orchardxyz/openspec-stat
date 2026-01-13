@@ -92,6 +92,11 @@ export async function selectBranches(repoPath: string, defaultBranches?: string[
     pageSize: 15,
   });
 
+  if (selected.length === 0) {
+    console.log(chalk.yellow(t('warning.noBranchesSelected')));
+    process.exit(1);
+  }
+
   if (selected.length > 0) {
     console.log(chalk.green(t('branch.selected')));
     selected.forEach((branch) => {
@@ -110,5 +115,5 @@ export async function selectBranches(repoPath: string, defaultBranches?: string[
     return [...selected.filter((b) => b !== '__custom__'), ...customBranches];
   }
 
-  return selected.length > 0 ? selected : defaultBranches || [];
+  return selected;
 }

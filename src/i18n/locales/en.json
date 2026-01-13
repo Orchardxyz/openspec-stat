@@ -29,6 +29,7 @@
   "warning.noCommits": "⚠️  No commits found matching the criteria",
   "warning.noQualifyingCommits": "⚠️  No commits found containing both OpenSpec proposals and code changes",
   "warning.noBranches": "⚠️  No remote branches found",
+  "warning.noBranchesSelected": "⚠️  No branches selected. Please select at least one branch to analyze.",
 
   "error.prefix": "❌ Error:",
 

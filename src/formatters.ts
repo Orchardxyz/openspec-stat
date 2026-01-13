@@ -79,7 +79,8 @@ export class OutputFormatter {
       const totalProposalDeletions = Array.from(result.proposals.values()).reduce((sum, p) => sum + p.deletions, 0);
       const totalProposalNetChanges = Array.from(result.proposals.values()).reduce((sum, p) => sum + p.netChanges, 0);
 
-      output += chalk.gray(
+      output += chalk.cyan('─'.repeat(80)) + '\n';
+      output += chalk.bold.cyan(
         t('output.proposalTotal', {
           count: totalProposals.toString(),
           commits: totalProposalCommits.toString(),
@@ -89,6 +90,7 @@ export class OutputFormatter {
           netChanges: totalProposalNetChanges.toString(),
         })
       );
+      output += chalk.cyan('─'.repeat(80)) + '\n';
     }
 
     output += chalk.bold.cyan(`\n${t('output.authorSummary')}\n`);
