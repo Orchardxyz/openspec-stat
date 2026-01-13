@@ -8,6 +8,9 @@ jobs:
   changeset-check:
     name: Check Changeset
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,8 +18,10 @@ jobs:
           fetch-depth: 0
 
       - name: Check for changeset
-        uses: changesets/action@v1
-        with:
-          version: echo "Checking for changesets"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -d ".changeset" ] || [ -z "$(ls -A .changeset/*.md 2>/dev/null | grep -v 'README.md')" ]; then
+            echo "::error::No changeset found. Please run 'pnpm changeset:add' to add a changeset."
+            exit 1
+          else
+            echo "✅ Changeset found"
+          fi
