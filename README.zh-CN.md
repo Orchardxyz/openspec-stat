@@ -273,6 +273,11 @@ pnpm build
 node dist/esm/cli.js
 ```
 
+## 贡献与发布流程
+
+- 请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解开发环境、分支策略和 PR 规范。
+- 请阅读 [RELEASE.md](./RELEASE.md) 了解基于 Changesets 的版本与发布流程。
+
 ## 许可证
 
 MIT

@@ -275,6 +275,11 @@ pnpm build
 node dist/esm/cli.js
 ```
 
+## Contributing & Release Process
+
+- See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, branching, and pull-request expectations.
+- See [RELEASE.md](./RELEASE.md) for the Changesets-driven versioning and publishing workflow.
+
 ## LICENSE
 
 MIT
