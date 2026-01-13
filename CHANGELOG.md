@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.4
+
+### Patch Changes
+
+- b74d994: fix: resolve duplicate code change counting for multi-proposal commits
+- 8e83c67: Improve branch selection validation and enhance proposal total styling
+
 ## 1.3.3
 
 ### Patch Changes
