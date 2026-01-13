@@ -67,6 +67,8 @@ export class StatsAggregator {
             deletions: 0,
             netChanges: 0,
             commitHashes: new Set<string>(),
+            multiProposalCommits: 0,
+            sharedCommitHashes: new Set<string>(),
           };
           proposalStatsMap.set(proposal, proposalStats);
         }
@@ -76,10 +78,19 @@ export class StatsAggregator {
           proposalStats.commitHashes.add(analysis.commit.hash);
           proposalStats.commits++;
           proposalStats.contributors.add(normalizedAuthor);
-          proposalStats.codeFilesChanged += analysis.codeFiles.length;
-          proposalStats.additions += analysis.totalAdditions;
-          proposalStats.deletions += analysis.totalDeletions;
-          proposalStats.netChanges += analysis.netChanges;
+
+          const proposalCount = analysis.openspecProposals.size;
+          const isMultiProposal = proposalCount > 1;
+
+          if (isMultiProposal) {
+            proposalStats.multiProposalCommits++;
+            proposalStats.sharedCommitHashes.add(analysis.commit.hash);
+          }
+
+          proposalStats.codeFilesChanged += Math.floor(analysis.codeFiles.length / proposalCount);
+          proposalStats.additions += Math.floor(analysis.totalAdditions / proposalCount);
+          proposalStats.deletions += Math.floor(analysis.totalDeletions / proposalCount);
+          proposalStats.netChanges += Math.floor(analysis.netChanges / proposalCount);
         }
       }
 

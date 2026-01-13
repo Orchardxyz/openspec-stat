@@ -40,8 +40,12 @@ export class OutputFormatter {
 
       for (const proposalStats of sortedProposals) {
         const contributors = Array.from(proposalStats.contributors).join(', ');
+        const proposalName =
+          proposalStats.multiProposalCommits > 0
+            ? `${proposalStats.proposal} ${chalk.yellow('⚠')}`
+            : proposalStats.proposal;
         proposalTable.push([
-          proposalStats.proposal,
+          proposalName,
           proposalStats.commits.toString(),
           contributors,
           proposalStats.codeFilesChanged.toString(),
@@ -54,6 +58,18 @@ export class OutputFormatter {
       }
 
       output += proposalTable.toString() + '\n';
+
+      const hasMultiProposalCommits = Array.from(result.proposals.values()).some((p) => p.multiProposalCommits > 0);
+      if (hasMultiProposalCommits) {
+        output += chalk.yellow(`\n⚠ ${t('output.multiProposalWarning')}\n`);
+        const affectedProposals = Array.from(result.proposals.values())
+          .filter((p) => p.multiProposalCommits > 0)
+          .map(
+            (p) => `  • ${p.proposal}: ${p.multiProposalCommits}/${p.commits} commits ${t('output.sharedWithOthers')}`
+          )
+          .join('\n');
+        output += chalk.gray(affectedProposals + '\n');
+      }
 
       // Proposal summary totals
       const totalProposals = result.proposals.size;
@@ -225,6 +241,9 @@ export class OutputFormatter {
           additions: stats.additions,
           deletions: stats.deletions,
           netChanges: stats.netChanges,
+          multiProposalCommits: stats.multiProposalCommits,
+          hasSharedCommits: stats.multiProposalCommits > 0,
+          sharedCommitHashes: Array.from(stats.sharedCommitHashes),
         })),
         summary: {
           totalProposals: result.proposals.size,
@@ -383,7 +402,8 @@ export class OutputFormatter {
 
     for (const stats of sortedProposals) {
       const contributors = Array.from(stats.contributors).join(', ');
-      md += `| ${stats.proposal} | ${stats.commits} | ${contributors} | ${stats.codeFilesChanged} | +${stats.additions} | -${stats.deletions} | ${stats.netChanges >= 0 ? '+' : ''}${stats.netChanges} |\n`;
+      const proposalName = stats.multiProposalCommits > 0 ? `${stats.proposal} ⚠️` : stats.proposal;
+      md += `| ${proposalName} | ${stats.commits} | ${contributors} | ${stats.codeFilesChanged} | +${stats.additions} | -${stats.deletions} | ${stats.netChanges >= 0 ? '+' : ''}${stats.netChanges} |\n`;
     }
 
     // Proposal totals
@@ -401,6 +421,16 @@ export class OutputFormatter {
     md += `- ${t('table.additions')}: +${totalProposalAdditions}\n`;
     md += `- ${t('table.deletions')}: -${totalProposalDeletions}\n`;
     md += `- ${t('table.netChanges')}: ${totalProposalNetChanges >= 0 ? '+' : ''}${totalProposalNetChanges}\n`;
+
+    const hasMultiProposalCommits = Array.from(result.proposals.values()).some((p) => p.multiProposalCommits > 0);
+    if (hasMultiProposalCommits) {
+      md += `\n> ⚠️ **${t('output.multiProposalWarning')}**\n>\n`;
+      const affectedProposals = Array.from(result.proposals.values()).filter((p) => p.multiProposalCommits > 0);
+      for (const p of affectedProposals) {
+        md += `> - ${p.proposal}: ${p.multiProposalCommits}/${p.commits} commits ${t('output.sharedWithOthers')}\n`;
+      }
+      md += '\n';
+    }
 
     // Author summary
     md += `\n## ${t('output.authorSummary')}\n\n`;

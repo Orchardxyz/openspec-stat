@@ -52,6 +52,8 @@
   "output.proposalSummary": "📋 提案汇总（按提案统计）",
   "output.proposalTotal": "  📊 总计：{{count}} 个提案 | {{commits}} 次提交 | {{files}} 个文件 | +{{additions}}/-{{deletions}} 行（净变更：{{netChanges}}）\n",
   "output.proposalTotalLabel": "提案汇总总计",
+  "output.multiProposalWarning": "注意：部分提案包含多提案共享的 commit，代码变更已按提案数量平均分配",
+  "output.sharedWithOthers": "与其他提案共享",
   "output.authorSummary": "👥 作者汇总（按贡献者统计）",
   "output.contributorHint": "💡 使用 --show-contributors 选项可查看每个贡献者的详细统计信息",
 

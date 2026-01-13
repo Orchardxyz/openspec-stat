@@ -84,6 +84,8 @@ export interface ProposalStats {
   deletions: number;
   netChanges: number;
   commitHashes: Set<string>;
+  multiProposalCommits: number;
+  sharedCommitHashes: Set<string>;
 }
 
 export interface StatsResult {
