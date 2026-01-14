@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.5
+
+### Patch Changes
+
+- d815724: - add CI workflow for lint/test/build/type-check
+  - add CI status badge to README files
+  - fix CI type-check step by installing TypeScript and running `pnpm exec tsc`
+- 57c1805: Add unit tests.
+
 ## 1.3.4
 
 ### Patch Changes
