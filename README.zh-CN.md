@@ -2,6 +2,7 @@
 
 [![NPM version](https://img.shields.io/npm/v/openspec-stat.svg?style=flat)](https://npmjs.com/package/openspec-stat)
 [![NPM downloads](http://img.shields.io/npm/dm/openspec-stat.svg?style=flat)](https://npmjs.com/package/openspec-stat)
+[![CI](https://github.com/Orchardxyz/openspec-stat/actions/workflows/ci.yml/badge.svg)](https://github.com/Orchardxyz/openspec-stat/actions/workflows/ci.yml)
 
 用于追踪团队成员在 Git 仓库中的 OpenSpec 提案和代码变更的命令行工具。
 
