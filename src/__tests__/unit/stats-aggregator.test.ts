@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { StatsAggregator } from '../../stats-aggregator.js';
-import { CommitAnalysis, Config, FileChange, CommitInfo } from '../../types.js';
+import { StatsAggregator } from '../../stats-aggregator';
+import { CommitAnalysis, Config, FileChange, CommitInfo } from '../../types';
 
 describe('StatsAggregator', () => {
   let config: Config;

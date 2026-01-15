@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { OutputFormatter } from '../../formatters.js';
-import { StatsResult, AuthorStats, ProposalStats } from '../../types.js';
+import { OutputFormatter } from '../../formatters';
+import { StatsResult, AuthorStats, ProposalStats } from '../../types';
 
 describe('OutputFormatter', () => {
   let formatter: OutputFormatter;

@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
-import { initI18n, t } from '../i18n/index.js';
-import { MultiRepoAnalyzer } from '../multi/multi-repo-analyzer.js';
-import { validateAndFillDefaults, printConfigSummary } from '../multi/config-validator.js';
-import { StatsAggregator } from '../stats-aggregator.js';
-import { OutputFormatter } from '../formatters.js';
-import { getDefaultTimeRange, parseDateTime } from '../time-utils.js';
-import { MultiRepoConfig } from '../types.js';
+import { initI18n, t } from '../i18n/index';
+import { MultiRepoAnalyzer } from '../multi/multi-repo-analyzer';
+import { validateAndFillDefaults, printConfigSummary } from '../multi/config-validator';
+import { StatsAggregator } from '../stats-aggregator';
+import { OutputFormatter } from '../formatters';
+import { getDefaultTimeRange, parseDateTime } from '../time-utils';
+import { MultiRepoConfig } from '../types';
 
 interface MultiCommandOptions {
   config: string;

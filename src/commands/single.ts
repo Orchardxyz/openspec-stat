@@ -1,12 +1,12 @@
 import chalk from 'chalk';
-import { loadConfig } from '../config.js';
-import { GitAnalyzer } from '../git-analyzer.js';
-import { StatsAggregator } from '../stats-aggregator.js';
-import { OutputFormatter } from '../formatters.js';
-import { getDefaultTimeRange, parseDateTime, parseBranches } from '../time-utils.js';
-import { selectBranches } from '../branch-selector.js';
-import { CliOptions } from '../types.js';
-import { initI18n, t } from '../i18n/index.js';
+import { loadConfig } from '../config';
+import { GitAnalyzer } from '../git-analyzer';
+import { StatsAggregator } from '../stats-aggregator';
+import { OutputFormatter } from '../formatters';
+import { getDefaultTimeRange, parseDateTime, parseBranches } from '../time-utils';
+import { selectBranches } from '../branch-selector';
+import { CliOptions } from '../types';
+import { initI18n, t } from '../i18n/index';
 
 export async function runSingleRepoCommand(options: CliOptions) {
   try {

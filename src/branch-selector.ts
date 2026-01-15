@@ -1,7 +1,7 @@
 import { select, checkbox, input } from '@inquirer/prompts';
 import simpleGit from 'simple-git';
 import chalk from 'chalk';
-import { t } from './i18n/index.js';
+import { t } from './i18n/index';
 
 export interface BranchInfo {
   name: string;

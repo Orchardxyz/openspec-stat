@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
-import { Config } from './types.js';
+import { Config } from './types';
 
 const DEFAULT_CONFIG: Config = {
   defaultBranches: ['origin/master'],

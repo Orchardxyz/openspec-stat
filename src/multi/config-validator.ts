@@ -1,6 +1,6 @@
-import { MultiRepoConfig } from '../types.js';
+import { MultiRepoConfig } from '../types';
 import chalk from 'chalk';
-import { t } from '../i18n/index.js';
+import { t } from '../i18n/index';
 
 const DEFAULT_MULTI_REPO_CONFIG: Partial<MultiRepoConfig> = {
   mode: 'multi-repo',

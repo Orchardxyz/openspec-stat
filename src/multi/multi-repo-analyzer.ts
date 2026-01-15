@@ -3,9 +3,9 @@ import { mkdtempSync, rmSync, existsSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 import chalk from 'chalk';
-import { GitAnalyzer } from '../git-analyzer.js';
-import { MultiRepoConfig, RepositoryConfig, RepositoryResult, CommitAnalysis } from '../types.js';
-import { t } from '../i18n/index.js';
+import { GitAnalyzer } from '../git-analyzer';
+import { MultiRepoConfig, RepositoryConfig, RepositoryResult, CommitAnalysis } from '../types';
+import { t } from '../i18n/index';
 
 export class MultiRepoAnalyzer {
   private config: MultiRepoConfig;
