@@ -35,11 +35,8 @@ jobs:
         run: pnpm run format:check
 
   test:
-    name: Test (Node ${{ matrix.node-version }})
+    name: Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18, 20]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,10 +46,10 @@ jobs:
         with:
           version: 10.12.1
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -62,11 +59,9 @@ jobs:
         run: pnpm run test:run
 
       - name: Generate coverage report
-        if: matrix.node-version == 20
         run: pnpm run test:coverage
 
       - name: Upload coverage report
-        if: matrix.node-version == 20
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
