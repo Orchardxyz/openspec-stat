@@ -3,15 +3,19 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 // Compatible with both CJS and ESM
-const getDir = (): string => {
-  if (typeof __dirname !== 'undefined') {
-    return __dirname;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getDirname = (): string => {
+  // Check if we're in ESM by looking for import.meta
+  if (typeof import.meta !== 'undefined' && import.meta.url) {
+    return dirname(fileURLToPath(import.meta.url));
   }
-  const __filename = fileURLToPath(import.meta.url);
-  return dirname(__filename);
+  // In CJS, use __dirname which is injected by Node.js
+  // We need to use eval to avoid bundler/transpiler issues
+  // eslint-disable-next-line no-eval
+  return eval('__dirname');
 };
 
-const __dirname: string = getDir();
+const __dirname = getDirname();
 
 type Language = 'en' | 'zh-CN';
 type TranslationKey = string;
