@@ -271,7 +271,7 @@ pnpm dev
 pnpm build
 
 # 本地测试
-node dist/esm/cli.js
+node dist/cjs/cli.js
 ```
 
 ## 贡献与发布流程

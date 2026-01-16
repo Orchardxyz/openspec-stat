@@ -2,8 +2,16 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Compatible with both CJS and ESM
+const getDir = (): string => {
+  if (typeof __dirname !== 'undefined') {
+    return __dirname;
+  }
+  const __filename = fileURLToPath(import.meta.url);
+  return dirname(__filename);
+};
+
+const __dirname: string = getDir();
 
 type Language = 'en' | 'zh-CN';
 type TranslationKey = string;
