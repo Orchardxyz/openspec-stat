@@ -3,15 +3,17 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 // Compatible with both CJS and ESM
-const getDir = (): string => {
-  if (typeof __dirname !== 'undefined') {
-    return __dirname;
-  }
-  const __filename = fileURLToPath(import.meta.url);
-  return dirname(__filename);
-};
-
-const __dirname: string = getDir();
+// In CJS, __dirname is injected by Node.js
+// In ESM, we need to derive it from import.meta.url
+let __dirname: string;
+try {
+  // Try to use import.meta.url (ESM)
+  __dirname = dirname(fileURLToPath(import.meta.url));
+} catch {
+  // Fall back to __filename (CJS) - this will be available in CJS context
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  __dirname = typeof __filename !== 'undefined' ? dirname(__filename) : process.cwd();
+}
 
 type Language = 'en' | 'zh-CN';
 type TranslationKey = string;
