@@ -1,7 +1,7 @@
 import Table from 'cli-table3';
 import chalk from 'chalk';
-import { StatsResult } from './types.js';
-import { t } from './i18n/index.js';
+import { StatsResult } from './types';
+import { t } from './i18n/index';
 
 export class OutputFormatter {
   formatTable(result: StatsResult, verbose: boolean = false, showContributors: boolean = true): string {

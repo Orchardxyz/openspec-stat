@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { getDefaultTimeRange, parseDateTime, parseBranches } from '../../time-utils.js';
+import { getDefaultTimeRange, parseDateTime, parseBranches } from '../../time-utils';
 
 describe('time-utils', () => {
   describe('parseDateTime', () => {

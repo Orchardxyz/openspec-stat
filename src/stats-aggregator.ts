@@ -1,5 +1,5 @@
-import { CommitAnalysis, AuthorStats, StatsResult, Config, ProposalStats } from './types.js';
-import { normalizeAuthor } from './config.js';
+import { CommitAnalysis, AuthorStats, StatsResult, Config, ProposalStats } from './types';
+import { normalizeAuthor } from './config';
 
 export class StatsAggregator {
   private config: Config;

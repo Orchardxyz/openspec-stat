@@ -1,8 +1,8 @@
 import { input, select, confirm } from '@inquirer/prompts';
 import chalk from 'chalk';
 import { writeFileSync } from 'fs';
-import { t } from '../i18n/index.js';
-import { RepositoryConfig } from '../types.js';
+import { t } from '../i18n/index';
+import { RepositoryConfig } from '../types';
 
 export async function runConfigWizard(isMultiRepo = false) {
   console.log(chalk.blue.bold(isMultiRepo ? t('init.welcomeMulti') : t('init.welcome')));

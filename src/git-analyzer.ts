@@ -1,6 +1,6 @@
 import simpleGit, { SimpleGit, DefaultLogFields } from 'simple-git';
-import { CommitInfo, FileChange, CommitAnalysis, Config } from './types.js';
-import { normalizeAuthor } from './config.js';
+import { CommitInfo, FileChange, CommitAnalysis, Config } from './types';
+import { normalizeAuthor } from './config';
 
 export class GitAnalyzer {
   private git: SimpleGit;

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { writeFileSync } from 'fs';
-import { t } from '../i18n/index.js';
-import { runConfigWizard, SINGLE_REPO_TEMPLATE, MULTI_REPO_TEMPLATE } from '../multi/config-wizard.js';
+import { t } from '../i18n/index';
+import { runConfigWizard, SINGLE_REPO_TEMPLATE, MULTI_REPO_TEMPLATE } from '../multi/config-wizard';
 
 interface InitOptions {
   multi?: boolean;

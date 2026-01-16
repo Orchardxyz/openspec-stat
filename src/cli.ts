@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { runSingleRepoCommand } from './commands/single.js';
-import { runMultiRepoCommand } from './commands/multi.js';
-import { runInitCommand } from './commands/init.js';
-import { CliOptions } from './types.js';
+import { runSingleRepoCommand } from './commands/single';
+import { runMultiRepoCommand } from './commands/multi';
+import { runInitCommand } from './commands/init';
+import { CliOptions } from './types';
 
 const program = new Command();
 

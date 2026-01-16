@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { normalizeAuthor, loadConfig } from '../../config.js';
+import { normalizeAuthor, loadConfig } from '../../config';
 import mockFs from 'mock-fs';
 
 describe('config', () => {
