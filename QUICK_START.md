@@ -14,7 +14,7 @@ pnpm build
 
 ```bash
 # Test in any Git repository
-node dist/esm/cli.js
+node dist/cjs/cli.js
 
 # Or link globally
 npm link

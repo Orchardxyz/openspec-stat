@@ -4,10 +4,12 @@
   "description": "Track team members' OpenSpec proposals and code changes in Git repositories",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
-  "type": "module",
   "packageManager": "pnpm@10.12.1",
   "bin": {
-    "openspec-stat": "dist/esm/cli.js"
+    "openspec-stat": "dist/cjs/cli.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "scripts": {
     "dev": "father dev",
@@ -18,9 +20,9 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:cli": "node dist/esm/cli.js --help",
+    "test:cli": "node dist/cjs/cli.js --help",
     "link:global": "npm link",
-    "link:local": "pnpm run build && chmod +x dist/esm/cli.js && npm link .",
+    "link:local": "pnpm run build && chmod +x dist/cjs/cli.js && npm link .",
     "unlink": "npm unlink -g openspec-stat",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",

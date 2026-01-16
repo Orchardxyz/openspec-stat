@@ -273,7 +273,7 @@ pnpm dev
 pnpm build
 
 # Local testing
-node dist/esm/cli.js
+node dist/cjs/cli.js
 ```
 
 ## Contributing & Release Process
