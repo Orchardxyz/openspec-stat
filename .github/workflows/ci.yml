@@ -94,9 +94,10 @@ jobs:
 
       - name: Verify build artifacts
         run: |
-          test -f dist/esm/cli.js || (echo "CLI build failed" && exit 1)
-          test -f dist/cjs/index.js || (echo "CJS build failed" && exit 1)
-          echo "✅ Build artifacts verified"
+          test -f dist/esm/cli.js || (echo "ESM CLI build failed" && exit 1)
+          test -f dist/esm/index.js || (echo "ESM index build failed" && exit 1)
+          test -f dist/esm/index.d.ts || (echo "Type declarations build failed" && exit 1)
+          echo "✅ ESM build artifacts verified"
 
   type-check:
     name: Type Check
