@@ -2,17 +2,24 @@
 'openspec-stat': minor
 ---
 
-Fix ES module resolution error and drop Node 18 support.
+Migrate to ESM-only build and fix module resolution errors.
 
-**Breaking Change:**
+**Breaking Changes:**
 - Drop Node 18 support, now requires Node.js >= 20.0.0
+- Package is now pure ESM (`"type": "module"` in package.json)
+- Remove CommonJS build output, only ESM is distributed
 
 **Fixes:**
-- Remove `type: module` from package.json to avoid conflicts with CommonJS output
-- Update bin entry to use `dist/cjs/cli.js` instead of `dist/esm/cli.js`
-- Add `platform: 'node'` config to .fatherrc.ts for better Node.js compatibility
-- Fix i18n/index.ts to support both CJS and ESM environments using eval-based __dirname detection
-- Update documentation references from dist/esm to dist/cjs
-- Remove Node 18 from CI test matrix
+- Add `"type": "module"` to package.json for proper ESM support
+- Update bin entry to use `dist/esm/cli.js`
+- Remove CJS build configuration from .fatherrc.ts
+- Add `fix-esm-import-path` package to automatically append `.js` extensions to relative imports during build
+- Update tsconfig.json with `moduleResolution: "bundler"` for better ESM compatibility
+- Update all build scripts and documentation to reference ESM output
 
-This resolves the `ERR_MODULE_NOT_FOUND` error that occurred when running `openspec-stat` command.
+**Technical Details:**
+- Uses `father` for TypeScript compilation
+- Uses `fix-esm-import-path` post-build step to ensure all relative imports have `.js` extensions for ESM compatibility
+- Source code maintains clean TypeScript imports without extensions; extensions are added during build
+
+This resolves the `ERR_REQUIRE_ESM` error when importing chalk 5.x and other pure ESM dependencies.

@@ -60,6 +60,9 @@ importers:
       father:
         specifier: ^4.6.13
         version: 4.6.13(@babel/core@7.28.5)(@types/node@25.0.3)(less-loader@12.3.0(less@4.5.1)(webpack@5.104.1))(less@4.5.1)(postcss@8.5.6)(resolve-url-loader@5.0.0)(sass-loader@13.3.3(sass@1.54.0)(webpack@5.104.1))(sass@1.54.0)(styled-components@6.2.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(type-fest@0.20.2)(webpack@5.104.1)
+      fix-esm-import-path:
+        specifier: ^1.10.3
+        version: 1.10.3
       husky:
         specifier: ^9.0.11
         version: 9.1.7
@@ -2557,6 +2560,10 @@ packages:
   find-up@5.0.0:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
+
+  fix-esm-import-path@1.10.3:
+    resolution: {integrity: sha512-mX98PYCWpLwJD7tuMvBXWJtQ5Se6eEiwC77VDP0s3xFvtNgixLGm95ebvEK16cbffV2doO5Vs9Jjg9RuNvhXYQ==}
+    hasBin: true
 
   flat-cache@3.2.0:
     resolution: {integrity: sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw==}
@@ -7287,6 +7294,12 @@ snapshots:
     dependencies:
       locate-path: 6.0.0
       path-exists: 4.0.0
+
+  fix-esm-import-path@1.10.3:
+    dependencies:
+      debug: 4.4.3
+    transitivePeerDependencies:
+      - supports-color
 
   flat-cache@3.2.0:
     dependencies:

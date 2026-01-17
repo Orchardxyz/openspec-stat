@@ -27,7 +27,15 @@ Useful commands:
 
 We follow a lightweight GitHub Flow style:
 
-1. Branch from `main` using a descriptive name, e.g. `feature/multi-repo-summary` or `fix/merge-dedup`.
+1. Branch from `main` using a descriptive name following the convention:
+   - `feat/` or `feature/` - New features or enhancements
+   - `fix/` - Bug fixes
+   - `chore/` - Maintenance tasks, dependency updates, CI/CD changes
+   - `docs/` - Documentation-only changes
+   - `refactor/` - Code refactoring without behavior changes
+   
+   Examples: `feat/multi-repo-summary`, `fix/merge-dedup`, `chore/update-ci-workflow`
+
 2. Keep branches focused on a single issue/feature.
 3. Rebase on top of `main` if the branch lives for more than a day to avoid drift.
 4. Push early and often to open a Draft PR—visibility helps reviewers prepare.
