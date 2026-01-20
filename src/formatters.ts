@@ -1,6 +1,66 @@
 import Table from 'cli-table3';
 import chalk from 'chalk';
 import { StatsResult } from './types';
+
+interface JsonProposalItem {
+  proposal: string;
+  commits: number;
+  contributors: string[];
+  contributorCount: number;
+  codeFilesChanged: number;
+  additions: number;
+  deletions: number;
+  netChanges: number;
+  multiProposalCommits: number;
+  hasSharedCommits: boolean;
+  sharedCommitHashes: string[];
+}
+
+interface JsonProposalSummary {
+  totalProposals: number;
+  totalCommits: number;
+  totalCodeFiles: number;
+  totalAdditions: number;
+  totalDeletions: number;
+  totalNetChanges: number;
+}
+
+interface JsonAuthorDetail {
+  author: string;
+  commits: number;
+  openspecProposals: string[];
+  proposalCount: number;
+  codeFilesChanged: number;
+  additions: number;
+  deletions: number;
+  netChanges: number;
+  lastCommitDate?: string;
+}
+
+interface JsonAuthorsSummary {
+  totalContributors: number;
+  totalCommits: number;
+  totalProposals: number;
+  totalCodeFiles: number;
+  totalAdditions: number;
+  totalDeletions: number;
+  totalNetChanges: number;
+}
+
+interface JsonOutput {
+  timeRange: {
+    since: string;
+    until: string;
+  };
+  branches: string[];
+  totalCommits: number;
+  proposals: {
+    items: JsonProposalItem[];
+    summary: JsonProposalSummary;
+  };
+  authors?: JsonAuthorDetail[];
+  authorsSummary?: JsonAuthorsSummary;
+}
 import { t } from './i18n/index';
 
 export class OutputFormatter {
@@ -42,7 +102,7 @@ export class OutputFormatter {
         const contributors = Array.from(proposalStats.contributors).join(', ');
         const proposalName =
           proposalStats.multiProposalCommits > 0
-            ? `${proposalStats.proposal} ${chalk.yellow('⚠')}`
+            ? `${proposalStats.proposal} ${chalk.yellow('!')}`
             : proposalStats.proposal;
         proposalTable.push([
           proposalName,
@@ -61,7 +121,7 @@ export class OutputFormatter {
 
       const hasMultiProposalCommits = Array.from(result.proposals.values()).some((p) => p.multiProposalCommits > 0);
       if (hasMultiProposalCommits) {
-        output += chalk.yellow(`\n⚠ ${t('output.multiProposalWarning')}\n`);
+        output += chalk.yellow(`\n${t('output.multiProposalWarning')}\n`);
         const affectedProposals = Array.from(result.proposals.values())
           .filter((p) => p.multiProposalCommits > 0)
           .map(
@@ -226,7 +286,7 @@ export class OutputFormatter {
   formatJSON(result: StatsResult, showContributors: boolean = true): string {
     const sortedAuthors = Array.from(result.authors.values());
 
-    const data: any = {
+    const data: JsonOutput = {
       timeRange: {
         since: result.timeRange.since.toISOString(),
         until: result.timeRange.until.toISOString(),
@@ -404,7 +464,7 @@ export class OutputFormatter {
 
     for (const stats of sortedProposals) {
       const contributors = Array.from(stats.contributors).join(', ');
-      const proposalName = stats.multiProposalCommits > 0 ? `${stats.proposal} ⚠️` : stats.proposal;
+      const proposalName = stats.multiProposalCommits > 0 ? `${stats.proposal} !` : stats.proposal;
       md += `| ${proposalName} | ${stats.commits} | ${contributors} | ${stats.codeFilesChanged} | +${stats.additions} | -${stats.deletions} | ${stats.netChanges >= 0 ? '+' : ''}${stats.netChanges} |\n`;
     }
 
@@ -426,7 +486,7 @@ export class OutputFormatter {
 
     const hasMultiProposalCommits = Array.from(result.proposals.values()).some((p) => p.multiProposalCommits > 0);
     if (hasMultiProposalCommits) {
-      md += `\n> ⚠️ **${t('output.multiProposalWarning')}**\n>\n`;
+      md += `\n> **${t('output.multiProposalWarning')}**\n>\n`;
       const affectedProposals = Array.from(result.proposals.values()).filter((p) => p.multiProposalCommits > 0);
       for (const p of affectedProposals) {
         md += `> - ${p.proposal}: ${p.multiProposalCommits}/${p.commits} commits ${t('output.sharedWithOthers')}\n`;

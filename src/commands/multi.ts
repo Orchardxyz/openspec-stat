@@ -7,7 +7,8 @@ import { validateAndFillDefaults, printConfigSummary } from '../multi/config-val
 import { StatsAggregator } from '../stats-aggregator';
 import { OutputFormatter } from '../formatters';
 import { getDefaultTimeRange, parseDateTime } from '../time-utils';
-import { MultiRepoConfig } from '../types';
+import { CommitAnalysis, MultiRepoConfig, RepositoryResult } from '../types';
+import { SpinnerManager } from '../ui/spinner';
 
 interface MultiCommandOptions {
   config: string;
@@ -27,12 +28,18 @@ interface MultiCommandOptions {
 export async function runMultiRepoCommand(options: MultiCommandOptions) {
   try {
     initI18n(options.lang || 'en');
+    const isQuiet = Boolean(options.json || options.csv || options.markdown);
+    const spinner = new SpinnerManager(isQuiet);
 
     console.log(chalk.yellow.bold(t('multi.beta.warning')));
     console.log(chalk.gray(t('multi.beta.feedback')));
     console.log();
 
-    console.log(chalk.blue(t('multi.loading.config')));
+    if (isQuiet) {
+      console.log(chalk.blue(t('multi.loading.config')));
+    } else {
+      spinner.start(t('multi.loading.config'));
+    }
 
     const configPath = resolve(process.cwd(), options.config);
     if (!existsSync(configPath)) {
@@ -41,6 +48,10 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
 
     const rawConfig = JSON.parse(readFileSync(configPath, 'utf-8'));
     const config = validateAndFillDefaults(rawConfig);
+
+    if (!isQuiet) {
+      spinner.succeed();
+    }
 
     if (options.verbose) {
       printConfigSummary(config);
@@ -71,7 +82,7 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
       )
     );
 
-    const analyzer = new MultiRepoAnalyzer(config);
+    const analyzer = new MultiRepoAnalyzer(config, { quiet: isQuiet });
     analyzer.registerCleanupHandlers();
 
     if (options.cleanup === false) {
@@ -122,8 +133,15 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
 
     console.log(chalk.blue(t('info.qualifyingCommits', { count: String(allAnalyses.length) })));
 
-    console.log(chalk.blue(t('loading.activeUsers')));
+    if (isQuiet) {
+      console.log(chalk.blue(t('loading.activeUsers')));
+    } else {
+      spinner.start(t('loading.activeUsers'));
+    }
     const activeAuthors = await getActiveAuthorsFromMultiRepo(config, repoResults);
+    if (!isQuiet) {
+      spinner.succeed();
+    }
 
     if (options.verbose && activeAuthors.size > 0) {
       console.log(
@@ -162,15 +180,16 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
   }
 }
 
-async function getActiveAuthorsFromMultiRepo(config: MultiRepoConfig, repoResults: any[]): Promise<Set<string>> {
+async function getActiveAuthorsFromMultiRepo(
+  config: MultiRepoConfig,
+  repoResults: RepositoryResult[]
+): Promise<Set<string>> {
   const allAuthors = new Set<string>();
 
   for (const result of repoResults) {
     if (result.success && result.analyses) {
-      result.analyses.forEach((analysis: any) => {
-        if (analysis.commit?.author) {
-          allAuthors.add(analysis.commit.author);
-        }
+      result.analyses.forEach((analysis: CommitAnalysis) => {
+        allAuthors.add(analysis.commit.author);
       });
     }
   }
