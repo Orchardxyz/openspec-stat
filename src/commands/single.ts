@@ -7,13 +7,23 @@ import { getDefaultTimeRange, parseDateTime, parseBranches } from '../time-utils
 import { selectBranches } from '../branch-selector';
 import { CliOptions } from '../types';
 import { initI18n, t } from '../i18n/index';
+import { SpinnerManager } from '../ui/spinner';
 
 export async function runSingleRepoCommand(options: CliOptions) {
   try {
     initI18n(options.lang);
+    const isQuiet = Boolean(options.json || options.csv || options.markdown);
+    const spinner = new SpinnerManager(isQuiet);
 
-    console.log(chalk.blue(t('loading.config')));
+    if (isQuiet) {
+      console.log(chalk.blue(t('loading.config')));
+    } else {
+      spinner.start(t('loading.config'));
+    }
     const config = await loadConfig(options.config, options.repo);
+    if (!isQuiet) {
+      spinner.succeed();
+    }
 
     let since: Date;
     let until: Date;
@@ -60,12 +70,26 @@ export async function runSingleRepoCommand(options: CliOptions) {
 
     // Fetch remote branches to ensure data is up-to-date
     if (!options.noFetch && config.autoFetch !== false) {
-      console.log(chalk.blue(t('loading.fetching')));
+      if (isQuiet) {
+        console.log(chalk.blue(t('loading.fetching')));
+      } else {
+        spinner.start(t('loading.fetching'));
+      }
       await analyzer.fetchRemote();
+      if (!isQuiet) {
+        spinner.succeed();
+      }
     }
 
-    console.log(chalk.blue(t('loading.activeUsers')));
+    if (isQuiet) {
+      console.log(chalk.blue(t('loading.activeUsers')));
+    } else {
+      spinner.start(t('loading.activeUsers'));
+    }
     const activeAuthors = await analyzer.getActiveAuthors(config.activeUserWeeks || 2);
+    if (!isQuiet) {
+      spinner.succeed();
+    }
 
     if (options.verbose) {
       console.log(
@@ -78,28 +102,41 @@ export async function runSingleRepoCommand(options: CliOptions) {
       );
     }
 
-    console.log(chalk.blue(t('loading.analyzing')));
+    if (isQuiet) {
+      console.log(chalk.blue(t('loading.analyzing')));
+    } else {
+      spinner.start(t('loading.analyzing'));
+    }
     const commits = await analyzer.getCommits(since, until, branches);
 
     if (commits.length === 0) {
-      console.log(chalk.yellow(t('warning.noCommits')));
+      if (isQuiet) {
+        console.log(chalk.yellow(t('warning.noCommits')));
+      } else {
+        spinner.warn(t('warning.noCommits'));
+      }
       return;
     }
 
-    console.log(chalk.blue(t('info.foundCommits', { count: String(commits.length) })));
+    if (isQuiet) {
+      console.log(chalk.blue(t('info.foundCommits', { count: String(commits.length) })));
+    } else {
+      spinner.update(t('info.foundCommits', { count: String(commits.length) }));
+    }
 
     const analyses = [];
     for (let i = 0; i < commits.length; i++) {
       const commit = commits[i];
       if (options.verbose && i % 10 === 0) {
-        console.log(
-          chalk.gray(
-            t('info.analysisProgress', {
-              current: String(i + 1),
-              total: String(commits.length),
-            })
-          )
-        );
+        const progressText = t('info.analysisProgress', {
+          current: String(i + 1),
+          total: String(commits.length),
+        });
+        if (isQuiet) {
+          console.log(chalk.gray(progressText));
+        } else {
+          spinner.update(progressText);
+        }
       }
       const analysis = await analyzer.analyzeCommit(commit);
       if (analysis) {
@@ -108,11 +145,19 @@ export async function runSingleRepoCommand(options: CliOptions) {
     }
 
     if (analyses.length === 0) {
-      console.log(chalk.yellow(t('warning.noQualifyingCommits')));
+      if (isQuiet) {
+        console.log(chalk.yellow(t('warning.noQualifyingCommits')));
+      } else {
+        spinner.warn(t('warning.noQualifyingCommits'));
+      }
       return;
     }
 
-    console.log(chalk.blue(t('info.qualifyingCommits', { count: String(analyses.length) })));
+    if (isQuiet) {
+      console.log(chalk.blue(t('info.qualifyingCommits', { count: String(analyses.length) })));
+    } else {
+      spinner.succeed(t('info.qualifyingCommits', { count: String(analyses.length) }));
+    }
 
     const aggregator = new StatsAggregator(config, activeAuthors);
     const result = aggregator.aggregate(analyses, since, until, branches, options.author);

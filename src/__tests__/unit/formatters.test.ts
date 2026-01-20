@@ -132,7 +132,7 @@ describe('OutputFormatter', () => {
       const output = formatter.formatJSON(mockResult, true);
       const parsed = JSON.parse(output);
 
-      const proposal1 = parsed.proposals.items.find((p: any) => p.proposal === 'proposal-1');
+      const proposal1 = parsed.proposals.items.find((p: { proposal: string }) => p.proposal === 'proposal-1');
       expect(proposal1.hasSharedCommits).toBe(true);
       expect(proposal1.multiProposalCommits).toBe(2);
       expect(proposal1.sharedCommitHashes).toEqual(['hash1', 'hash2']);
@@ -211,13 +211,12 @@ describe('OutputFormatter', () => {
       expect(output).not.toContain('11 days');
     });
 
-    it('should mark multi-proposal commits with warning emoji', () => {
+    it('should mark multi-proposal commits with warning marker', () => {
       mockResult.proposals.get('proposal-1')!.multiProposalCommits = 2;
 
       const output = formatter.formatMarkdown(mockResult, true);
 
-      expect(output).toContain('proposal-1 ⚠️');
-      expect(output).toContain('⚠️');
+      expect(output).toContain('proposal-1 !');
     });
 
     it('should include proposal details section', () => {
@@ -259,12 +258,12 @@ describe('OutputFormatter', () => {
       expect(output).toContain('8');
     });
 
-    it('should mark multi-proposal commits with warning', () => {
+    it('should mark multi-proposal commits with warning marker', () => {
       mockResult.proposals.get('proposal-1')!.multiProposalCommits = 2;
 
       const output = formatter.formatTable(mockResult, false, true);
 
-      expect(output).toContain('⚠');
+      expect(output).toContain('proposal-1 !');
     });
 
     it('should show verbose proposal details when verbose is true', () => {

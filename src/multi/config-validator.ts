@@ -1,4 +1,4 @@
-import { MultiRepoConfig } from '../types';
+import { MultiRepoConfig, RepositoryConfig } from '../types';
 import chalk from 'chalk';
 import { t } from '../i18n/index';
 
@@ -22,17 +22,20 @@ const DEFAULT_MULTI_REPO_CONFIG: Partial<MultiRepoConfig> = {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function validateAndFillDefaults(config: any): MultiRepoConfig {
-  if (!config.repositories || !Array.isArray(config.repositories)) {
+export function validateAndFillDefaults(config: unknown): MultiRepoConfig {
+  const rawConfig = config as Partial<MultiRepoConfig> & {
+    repositories?: Array<Partial<RepositoryConfig>>;
+  };
+
+  if (!rawConfig.repositories || !Array.isArray(rawConfig.repositories)) {
     throw new Error(t('config.validation.noRepos'));
   }
 
-  if (config.repositories.length === 0) {
+  if (rawConfig.repositories.length === 0) {
     throw new Error(t('config.validation.emptyRepos'));
   }
 
-  config.repositories.forEach((repo: any, index: number) => {
+  rawConfig.repositories.forEach((repo, index) => {
     if (!repo.name) {
       throw new Error(t('config.validation.noName', { index: String(index + 1) }));
     }
@@ -64,14 +67,14 @@ export function validateAndFillDefaults(config: any): MultiRepoConfig {
 
   const mergedConfig = {
     ...DEFAULT_MULTI_REPO_CONFIG,
-    ...config,
+    ...rawConfig,
     parallelism: {
       ...DEFAULT_MULTI_REPO_CONFIG.parallelism,
-      ...config.parallelism,
+      ...rawConfig.parallelism,
     },
     remoteCache: {
       ...DEFAULT_MULTI_REPO_CONFIG.remoteCache,
-      ...config.remoteCache,
+      ...rawConfig.remoteCache,
     },
   };
 
@@ -83,9 +86,8 @@ export function printConfigSummary(config: MultiRepoConfig) {
 
   console.log(chalk.cyan(t('config.summary.repositories')));
   config.repositories?.forEach((repo, i) => {
-    const icon = repo.type === 'local' ? '📁' : '☁️';
     const location = repo.type === 'local' ? repo.path : repo.url;
-    console.log(`  ${i + 1}. ${icon} ${chalk.bold(repo.name)} (${repo.type})`);
+    console.log(`  ${i + 1}. ${chalk.bold(repo.name)} (${repo.type})`);
     console.log(`     ${chalk.gray(location)}`);
     console.log(`     ${chalk.gray('Branches:')} ${repo.branches.join(', ')}`);
   });

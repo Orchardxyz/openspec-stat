@@ -6,18 +6,31 @@ import chalk from 'chalk';
 import { GitAnalyzer } from '../git-analyzer';
 import { MultiRepoConfig, RepositoryConfig, RepositoryResult, CommitAnalysis } from '../types';
 import { t } from '../i18n/index';
+import { SpinnerManager } from '../ui/spinner';
+
+interface AnalyzerOptions {
+  quiet?: boolean;
+}
 
 export class MultiRepoAnalyzer {
   private config: MultiRepoConfig;
   private tempDirs: Set<string> = new Set();
+  private isQuiet: boolean;
+  private cloneOrder: Map<string, number> = new Map();
+  private totalCloneTargets = 0;
+  private nextCloneIndex = 1;
 
-  constructor(config: MultiRepoConfig) {
+  constructor(config: MultiRepoConfig, options?: AnalyzerOptions) {
     this.config = config;
+    this.isQuiet = options?.quiet ?? false;
   }
 
   async analyzeAll(since: Date, until: Date): Promise<RepositoryResult[]> {
     const repos = this.config.repositories || [];
     const enabledRepos = repos.filter((r) => r.enabled !== false);
+    this.cloneOrder.clear();
+    this.nextCloneIndex = 1;
+    this.totalCloneTargets = enabledRepos.filter((repo) => repo.type === 'remote').length;
 
     try {
       const results = await this.processInBatches(
@@ -118,7 +131,9 @@ export class MultiRepoAnalyzer {
     const tempDir = mkdtempSync(join(cacheDir, `${repo.name}-`));
     this.tempDirs.add(tempDir);
 
-    console.log(chalk.cyan(t('multi.repo.cloning', { repo: repo.name })));
+    const progressSuffix = this.getProgressSuffix(repo.name);
+    const cloneSpinner = this.isQuiet ? undefined : new SpinnerManager(false);
+    this.reportCloneStatus('start', repo.name, progressSuffix, cloneSpinner);
 
     const git: SimpleGit = simpleGit();
 
@@ -133,10 +148,15 @@ export class MultiRepoAnalyzer {
     }
 
     const timeout = this.config.parallelism?.timeout || 600000;
-    await this.withTimeout(git.clone(repo.url!, tempDir, cloneArgs), timeout, `Clone timeout for ${repo.name}`);
-
-    console.log(chalk.green(t('multi.repo.cloned', { repo: repo.name })));
-    return tempDir;
+    try {
+      await this.withTimeout(git.clone(repo.url!, tempDir, cloneArgs), timeout, `Clone timeout for ${repo.name}`);
+      this.reportCloneStatus('success', repo.name, progressSuffix, cloneSpinner);
+      return tempDir;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.reportCloneStatus('fail', repo.name, progressSuffix, cloneSpinner, errorMessage);
+      throw error;
+    }
   }
 
   private resolveLocalPath(path: string): string {
@@ -220,5 +240,53 @@ export class MultiRepoAnalyzer {
 
     // Note: We don't register uncaughtException handler as it prevents normal process exit
     // Cleanup will still happen via cleanupOnComplete in analyzeAll()
+  }
+
+  private getProgressSuffix(repoName: string): string {
+    if (this.totalCloneTargets === 0) {
+      return '';
+    }
+    let order = this.cloneOrder.get(repoName);
+    if (!order) {
+      order = this.nextCloneIndex;
+      this.cloneOrder.set(repoName, order);
+      this.nextCloneIndex += 1;
+    }
+    return ` (${order}/${this.totalCloneTargets})`;
+  }
+
+  private reportCloneStatus(
+    status: 'start' | 'success' | 'fail',
+    repoName: string,
+    progressSuffix: string,
+    spinner?: SpinnerManager,
+    errorMessage?: string
+  ): void {
+    const messageKey =
+      status === 'start' ? 'multi.repo.cloning' : status === 'success' ? 'multi.repo.cloned' : 'multi.repo.failed';
+    const messageParams: Record<string, string | number> = { repo: repoName };
+    if (status === 'fail') {
+      messageParams.error = errorMessage || '';
+    }
+    const text = `${t(messageKey, messageParams)}${progressSuffix}`;
+
+    if (spinner) {
+      if (status === 'start') {
+        spinner.start(text);
+      } else if (status === 'success') {
+        spinner.succeed(text);
+      } else {
+        spinner.fail(text);
+      }
+      return;
+    }
+
+    if (status === 'start') {
+      console.log(chalk.cyan(text));
+    } else if (status === 'success') {
+      console.log(chalk.green(text));
+    } else {
+      console.log(chalk.red(text));
+    }
   }
 }
