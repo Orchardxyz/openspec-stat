@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1
+
+### Patch Changes
+
+- b48ad85: Improve multi-repo CLI output formatting and documentation.
+
 ## 1.4.0
 
 ### Minor Changes
