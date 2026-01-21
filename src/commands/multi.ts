@@ -105,19 +105,22 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
     const successResults = repoResults.filter((r) => r.success);
     const failedResults = repoResults.filter((r) => !r.success);
 
+    const summaryDivider = '-'.repeat(64);
+    console.log(chalk.gray(summaryDivider));
+    console.log(chalk.blue(t('multi.summary.title')));
+    console.log(chalk.gray(summaryDivider));
     console.log(
       chalk.blue(
-        t('multi.summary.title') +
-          t('multi.summary.repos', {
-            total: String(repoResults.length),
-            success: String(successResults.length),
-            failed: String(failedResults.length),
-          })
+        t('multi.summary.repos', {
+          total: String(repoResults.length),
+          success: String(successResults.length),
+          failed: String(failedResults.length),
+        })
       )
     );
 
     if (failedResults.length > 0) {
-      console.log(chalk.yellow('\nFailed repositories:'));
+      console.log(chalk.yellow(`\n${t('multi.summary.failedTitle')}`));
       failedResults.forEach((r) => {
         console.log(chalk.red(`  - ${r.repository}: ${r.error}`));
       });

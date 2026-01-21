@@ -12,6 +12,14 @@ interface AnalyzerOptions {
   quiet?: boolean;
 }
 
+interface BatchContext {
+  batchNumber: number;
+  totalBatches: number;
+  indexInBatch: number;
+  batchSize: number;
+  totalItems: number;
+}
+
 export class MultiRepoAnalyzer {
   private config: MultiRepoConfig;
   private tempDirs: Set<string> = new Set();
@@ -35,7 +43,7 @@ export class MultiRepoAnalyzer {
     try {
       const results = await this.processInBatches(
         enabledRepos,
-        (repo) => this.analyzeRepository(repo, since, until),
+        (repo, context) => this.analyzeRepository(repo, since, until, context),
         this.config.parallelism?.maxConcurrent || 3
       );
 
@@ -47,7 +55,12 @@ export class MultiRepoAnalyzer {
     }
   }
 
-  private async analyzeRepository(repo: RepositoryConfig, since: Date, until: Date): Promise<RepositoryResult> {
+  private async analyzeRepository(
+    repo: RepositoryConfig,
+    since: Date,
+    until: Date,
+    context: BatchContext
+  ): Promise<RepositoryResult> {
     let repoPath: string;
 
     try {
@@ -63,7 +76,17 @@ export class MultiRepoAnalyzer {
         };
       }
 
-      console.log(chalk.blue(t('multi.repo.analyzing', { repo: repo.name, type: repo.type })));
+      const typeSuffix = repo.type === 'remote' ? t('multi.repo.type.remote') : '';
+      console.log(
+        chalk.blue(
+          t('multi.repo.header', {
+            current: String(context.indexInBatch + 1),
+            total: String(context.batchSize),
+            repo: repo.name,
+            typeSuffix,
+          })
+        )
+      );
 
       if (repo.type === 'local') {
         repoPath = this.resolveLocalPath(repo.path!);
@@ -79,9 +102,11 @@ export class MultiRepoAnalyzer {
 
       // Fetch remote branches for local repositories to ensure data is up-to-date
       if (repo.type === 'local' && this.config.autoFetch !== false) {
-        console.log(chalk.cyan(t('multi.repo.fetching', { repo: repo.name })));
+        console.log(chalk.cyan(t('multi.repo.fetching')));
         await analyzer.fetchRemote();
       }
+
+      console.log(chalk.gray(t('multi.repo.analyzing')));
 
       const commits = await analyzer.getCommits(since, until, repo.branches);
 
@@ -168,23 +193,40 @@ export class MultiRepoAnalyzer {
 
   private async processInBatches<T, R>(
     items: T[],
-    processor: (item: T) => Promise<R>,
+    processor: (item: T, context: BatchContext) => Promise<R>,
     concurrency: number
   ): Promise<R[]> {
     const results: R[] = [];
+    const divider = '-'.repeat(64);
 
     for (let i = 0; i < items.length; i += concurrency) {
       const batch = items.slice(i, i + concurrency);
       const batchNumber = Math.floor(i / concurrency) + 1;
       const totalBatches = Math.ceil(items.length / concurrency);
 
-      if (totalBatches > 1) {
-        console.log(
-          chalk.gray(t('multi.progress.batch', { current: String(batchNumber), total: String(totalBatches) }))
-        );
-      }
+      console.log(chalk.gray(divider));
+      console.log(
+        chalk.gray(
+          t('multi.progress.batch', {
+            current: String(batchNumber),
+            total: String(totalBatches),
+            count: String(batch.length),
+          })
+        )
+      );
+      console.log(chalk.gray(divider));
 
-      const batchResults = await Promise.all(batch.map(processor));
+      const batchResults = await Promise.all(
+        batch.map((item, index) =>
+          processor(item, {
+            batchNumber,
+            totalBatches,
+            indexInBatch: index,
+            batchSize: batch.length,
+            totalItems: items.length,
+          })
+        )
+      );
       results.push(...batchResults);
     }
 
@@ -263,7 +305,7 @@ export class MultiRepoAnalyzer {
     errorMessage?: string
   ): void {
     const messageKey =
-      status === 'start' ? 'multi.repo.cloning' : status === 'success' ? 'multi.repo.cloned' : 'multi.repo.failed';
+      status === 'start' ? 'multi.repo.cloning' : status === 'success' ? 'multi.repo.cloned' : 'multi.repo.cloneFailed';
     const messageParams: Record<string, string | number> = { repo: repoName };
     if (status === 'fail') {
       messageParams.error = errorMessage || '';

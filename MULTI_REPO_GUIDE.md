@@ -305,35 +305,35 @@ openspec-stat -c config.json
 ## Example Output
 
 ```
-⚠️  BETA: Multi-repository mode is experimental
+BETA: Multi-repository mode is experimental
    Please report issues at: https://github.com/Orchardxyz/openspec-stat/issues
 
-🔍 Loading multi-repository configuration...
-📋 Configuration Summary
+✔ Loading multi-repository configuration...
+Time Range: 1/7/2024, 8:00:00 PM ~ 1/8/2024, 8:00:00 PM
 
-Repositories:
-  1. 📁 backend-main (local)
-     /Users/manager/projects/backend-main
-     Branches: origin/master
-  2. ☁️  frontend-web (remote)
-     git@github.com:company/frontend.git
-     Branches: origin/master
+----------------------------------------------------------------
+Processing batch 1/1 (2 repositories)...
+----------------------------------------------------------------
+  [1/2] backend-main
+    - Fetching remote branches...
+    - Analyzing commits...
+    Completed backend-main: 15 commits
+  [2/2] frontend-web (remote)
+    - Cloning frontend-web...
+    - Clone completed: frontend-web
+    - Analyzing commits...
+    Completed frontend-web: 23 commits
+Cleaning up temporary directories...
+Cleanup completed
 
-📅 Time Range: 1/7/2024, 8:00:00 PM ~ 1/8/2024, 8:00:00 PM
-
-📊 Analyzing backend-main (local)...
-✅ Completed backend-main: 15 commits
-☁️  Cloning frontend-web...
-✅ Successfully cloned frontend-web
-📊 Analyzing frontend-web (remote)...
-✅ Completed frontend-web: 23 commits
-🧹 Cleaning up temporary directories...
-✅ Cleanup completed
-
-📦 Multi-Repository Summary
+----------------------------------------------------------------
+Summary
+----------------------------------------------------------------
 Repositories: 2 (2 succeeded, 0 failed)
 
-✅ Found 38 qualifying commits (containing OpenSpec proposals and code changes)
+Found 38 qualifying commits (containing OpenSpec proposals and code changes)
+
+✔ Fetching active users...
 
 [Statistics tables follow...]
 ```
