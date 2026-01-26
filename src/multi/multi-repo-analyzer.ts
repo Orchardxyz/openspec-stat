@@ -1,4 +1,4 @@
-import simpleGit, { SimpleGit } from 'simple-git';
+import simpleGit, { SimpleGit, SimpleGitProgressEvent } from 'simple-git';
 import { mkdtempSync, rmSync, existsSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
@@ -160,9 +160,23 @@ export class MultiRepoAnalyzer {
     const cloneSpinner = this.isQuiet ? undefined : new SpinnerManager(false);
     this.reportCloneStatus('start', repo.name, progressSuffix, cloneSpinner);
 
-    const git: SimpleGit = simpleGit();
+    const progressReporter = ({ method, stage, progress }: SimpleGitProgressEvent) => {
+      if (this.isQuiet) return;
+      const pct = Number.isFinite(progress) ? `${progress.toFixed(1)}%` : '';
+      const text = `${t('multi.repo.cloning', { repo: repo.name })}${progressSuffix} ${method} ${stage}${pct ? ` ${pct}` : ''}`;
+      if (cloneSpinner) {
+        cloneSpinner.update(text);
+      } else {
+        console.log(chalk.cyan(text));
+      }
+    };
+
+    const git: SimpleGit = simpleGit({ progress: progressReporter });
 
     const cloneArgs: string[] = [];
+
+    // Enable git's progress output so simple-git can emit progress events
+    cloneArgs.push('--progress');
 
     if (repo.cloneOptions?.depth !== null && repo.cloneOptions?.depth !== undefined) {
       cloneArgs.push(`--depth=${repo.cloneOptions.depth}`);
