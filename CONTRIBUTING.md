@@ -67,7 +67,7 @@ If you believe your PR qualifies, add the GitHub label `skip-changeset`. The CI 
 
 ## Commit Style
 
-We do not enforce a strict conventional commit format, but keep messages informative:
+We enforce conventional commits. If the message contains Chinese characters, the hook will warn but not block the commit.
 
 - Use the imperative mood: `fix: handle merge commits`
 - Explain *why* when the diff is non-obvious.
