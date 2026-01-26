@@ -2,7 +2,9 @@
 
 [![NPM version](https://img.shields.io/npm/v/openspec-stat.svg?style=flat)](https://npmjs.com/package/openspec-stat)
 [![NPM downloads](http://img.shields.io/npm/dm/openspec-stat.svg?style=flat)](https://npmjs.com/package/openspec-stat)
+[![Last commit](https://img.shields.io/github/last-commit/Orchardxyz/openspec-stat.svg?style=flat)](https://github.com/Orchardxyz/openspec-stat/commits/main)
 [![CI](https://github.com/Orchardxyz/openspec-stat/actions/workflows/ci.yml/badge.svg)](https://github.com/Orchardxyz/openspec-stat/actions/workflows/ci.yml)
+[![License](https://img.shields.io/npm/l/openspec-stat.svg?style=flat)](https://github.com/Orchardxyz/openspec-stat/blob/main/LICENSE)
 
 English | [简体中文](./README.zh-CN.md)
 
