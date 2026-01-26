@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.2
+
+### Patch Changes
+
+- 5fbc2f3: - Add git clone progress output using simple-git progress events and progress flag.
+
 ## 1.4.1
 
 ### Patch Changes
