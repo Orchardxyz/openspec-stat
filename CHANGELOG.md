@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.3
+
+### Patch Changes
+
+- 66f8237: Add commit message linting via commitlint and husky
+- 7eb6fb5: Improve README badges ordering to emphasize release, usage, activity, CI, and license info.
+
 ## 1.4.2
 
 ### Patch Changes
