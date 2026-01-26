@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx --no-install commitlint --edit "$1"
+
+node -e "const fs=require('fs');const msg=fs.readFileSync(process.argv[1],'utf8');if(/[\u4e00-\u9fff]/.test(msg)){console.warn('⚠️  Commit message contains Chinese characters. Please use English for future commits.');}" "$1"
