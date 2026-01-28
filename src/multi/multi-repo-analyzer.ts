@@ -41,13 +41,22 @@ export class MultiRepoAnalyzer {
     this.totalCloneTargets = enabledRepos.filter((repo) => repo.type === 'remote').length;
 
     try {
-      const results = await this.processInBatches(
-        enabledRepos,
+      const localRepos = enabledRepos.filter((repo) => repo.type === 'local');
+      const remoteRepos = enabledRepos.filter((repo) => repo.type === 'remote');
+      const maxConcurrent = this.config.parallelism?.maxConcurrent || 3;
+
+      const localResults = await this.processInBatches(
+        localRepos,
         (repo, context) => this.analyzeRepository(repo, since, until, context),
-        this.config.parallelism?.maxConcurrent || 3
+        maxConcurrent
+      );
+      const remoteResults = await this.processInBatches(
+        remoteRepos,
+        (repo, context) => this.analyzeRepository(repo, since, until, context),
+        maxConcurrent
       );
 
-      return results;
+      return [...localResults, ...remoteResults];
     } finally {
       if (this.config.remoteCache?.cleanupOnComplete) {
         await this.cleanupTempDirs();
