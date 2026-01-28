@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.4
+
+### Patch Changes
+
+- f50fe25: Stop emitting TypeScript declaration files for CLI-only package
+- 1014e83: Process local repos before remote to avoid interleaved logs
+
 ## 1.4.3
 
 ### Patch Changes
