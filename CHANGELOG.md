@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.5
+
+### Patch Changes
+
+- 17b542a: Clarify the English and Chinese READMEs with shorter quick-start, feature, and configuration sections.
+
 ## 1.4.4
 
 ### Patch Changes
