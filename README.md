@@ -66,6 +66,10 @@ openspec-stat multi -c .openspec-stats.multi.json --show-contributors
 
 See [Multi-Repository Guide](./MULTI_REPO_GUIDE.md) for full details.
 
+**Remote cache**: remote repos are cloned once and reused under
+`~/.openspec-stat/cached/repos/<repo-name>-<hash>`. Use `--cache-mode temporary`
+to force one-off clones, or `--force-clone` to refresh a single run.
+
 ## Configuration (short)
 
 Create `.openspec-stats.json` or `openspec-stats.config.json` in the repo root.

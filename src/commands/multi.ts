@@ -7,7 +7,7 @@ import { validateAndFillDefaults, printConfigSummary } from '../multi/config-val
 import { StatsAggregator } from '../stats-aggregator';
 import { OutputFormatter } from '../formatters';
 import { getDefaultTimeRange, parseDateTime } from '../time-utils';
-import { CommitAnalysis, MultiRepoConfig, RepositoryResult } from '../types';
+import { CommitAnalysis, MultiRepoConfig, RepositoryResult, RemoteCacheConfig } from '../types';
 import { SpinnerManager } from '../ui/spinner';
 
 interface MultiCommandOptions {
@@ -23,6 +23,9 @@ interface MultiCommandOptions {
   cleanup?: boolean;
   showContributors?: boolean;
   noFetch?: boolean;
+  cacheMode?: 'persistent' | 'temporary';
+  cacheMaxAge?: string;
+  forceClone?: boolean;
 }
 
 export async function runMultiRepoCommand(options: MultiCommandOptions) {
@@ -48,6 +51,34 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
 
     const rawConfig = JSON.parse(readFileSync(configPath, 'utf-8'));
     const config = validateAndFillDefaults(rawConfig);
+
+    const ensureCacheConfig = (): RemoteCacheConfig => {
+      if (!config.remoteCache) {
+        config.remoteCache = {
+          autoCleanup: true,
+          cleanupOnComplete: false,
+          cleanupOnError: true,
+          mode: 'persistent',
+        };
+      }
+      return config.remoteCache;
+    };
+
+    if (options.cacheMode) {
+      const cacheCfg = ensureCacheConfig();
+      cacheCfg.mode = options.cacheMode;
+      if (options.cacheMode === 'temporary') {
+        cacheCfg.cleanupOnComplete = true;
+      }
+    }
+
+    if (options.cacheMaxAge !== undefined) {
+      const parsed = Number(options.cacheMaxAge);
+      if (!Number.isNaN(parsed)) {
+        const cacheCfg = ensureCacheConfig();
+        cacheCfg.maxAge = parsed;
+      }
+    }
 
     if (!isQuiet) {
       spinner.succeed();
@@ -82,23 +113,20 @@ export async function runMultiRepoCommand(options: MultiCommandOptions) {
       )
     );
 
-    const analyzer = new MultiRepoAnalyzer(config, { quiet: isQuiet });
-    analyzer.registerCleanupHandlers();
-
     if (options.cleanup === false) {
-      config.remoteCache = config.remoteCache || {
-        dir: '/tmp/openspec-stat-cache',
-        autoCleanup: false,
-        cleanupOnComplete: false,
-        cleanupOnError: false,
-      };
-      config.remoteCache.cleanupOnComplete = false;
+      const cacheCfg = ensureCacheConfig();
+      cacheCfg.autoCleanup = false;
+      cacheCfg.cleanupOnComplete = false;
+      cacheCfg.cleanupOnError = false;
     }
 
     // Handle --no-fetch option
     if (options.noFetch) {
       config.autoFetch = false;
     }
+
+    const analyzer = new MultiRepoAnalyzer(config, { quiet: isQuiet, forceClone: options.forceClone });
+    analyzer.registerCleanupHandlers();
 
     const repoResults = await analyzer.analyzeAll(since, until);
 

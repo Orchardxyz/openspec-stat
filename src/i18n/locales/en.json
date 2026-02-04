@@ -87,6 +87,7 @@
   "multi.repo.header": "  [{{current}}/{{total}}] {{repo}}{{typeSuffix}}",
   "multi.repo.type.remote": " (remote)",
   "multi.repo.cloning": "    - Cloning {{repo}}...",
+  "multi.repo.updating": "    - Updating cache for {{repo}}...",
   "multi.repo.cloned": "    - Clone completed: {{repo}}",
   "multi.repo.cloneFailed": "    - Clone failed: {{repo}} ({{error}})",
   "multi.repo.fetching": "    - Fetching remote branches...",

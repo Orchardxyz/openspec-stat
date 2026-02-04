@@ -1,4 +1,5 @@
 import { MultiRepoConfig, RepositoryConfig } from '../types';
+import { GLOBAL_CACHE_DIR } from './cache-path';
 import chalk from 'chalk';
 import { t } from '../i18n/index';
 
@@ -15,10 +16,10 @@ const DEFAULT_MULTI_REPO_CONFIG: Partial<MultiRepoConfig> = {
     timeout: 600000,
   },
   remoteCache: {
-    dir: '/tmp/openspec-stat-cache',
     autoCleanup: true,
-    cleanupOnComplete: true,
+    cleanupOnComplete: false,
     cleanupOnError: true,
+    mode: 'persistent',
   },
 };
 
@@ -100,7 +101,7 @@ export function printConfigSummary(config: MultiRepoConfig) {
   console.log(t('config.summary.maxConcurrent', { count: String(config.parallelism?.maxConcurrent || 3) }));
 
   console.log(chalk.cyan(t('config.summary.remoteCache')));
-  console.log(t('config.summary.cacheDir', { dir: config.remoteCache?.dir || '/tmp/openspec-stat-cache' }));
+  console.log(t('config.summary.cacheDir', { dir: GLOBAL_CACHE_DIR }));
   console.log(
     t('config.summary.autoCleanup', {
       enabled: config.remoteCache?.cleanupOnComplete ? 'Yes' : 'No',
