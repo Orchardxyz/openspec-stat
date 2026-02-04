@@ -103,6 +103,9 @@
   "multi.progress.batch": "Processing batch {{current}}/{{total}} ({{count}} repositories)...",
   "multi.table.repository": "Repository",
   "multi.table.type": "Type",
+  "multi.rerun.finished": "FINISHED",
+  "multi.rerun.prompt": "Press {{rerunKey}} to rerun stats, {{quitKey}} to quit",
+  "multi.rerun.running": "Re-running multi-repo statistics...",
 
   "init.welcome": "\nOpenSpec Configuration Wizard\n",
   "init.welcomeMulti": "\nOpenSpec Multi-Repository Configuration Wizard (BETA)\n",

@@ -103,6 +103,9 @@
   "multi.progress.batch": "正在处理批次 {{current}}/{{total}}（{{count}} 个仓库）...",
   "multi.table.repository": "仓库",
   "multi.table.type": "类型",
+  "multi.rerun.finished": "已完成",
+  "multi.rerun.prompt": "按 {{rerunKey}} 重新运行统计，按 {{quitKey}} 退出",
+  "multi.rerun.running": "正在重新运行多仓库统计...",
 
   "init.welcome": "\nOpenSpec 配置向导\n",
   "init.welcomeMulti": "\nOpenSpec 多仓库配置向导（测试版）\n",
