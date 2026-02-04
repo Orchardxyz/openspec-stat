@@ -87,6 +87,7 @@
   "multi.repo.header": "  [{{current}}/{{total}}] {{repo}}{{typeSuffix}}",
   "multi.repo.type.remote": "（远程）",
   "multi.repo.cloning": "    - 正在克隆 {{repo}}...",
+  "multi.repo.updating": "    - 正在更新缓存 {{repo}}...",
   "multi.repo.cloned": "    - 克隆完成：{{repo}}",
   "multi.repo.cloneFailed": "    - 克隆失败：{{repo}}（{{error}}）",
   "multi.repo.fetching": "    - 正在拉取远程分支...",

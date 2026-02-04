@@ -47,6 +47,9 @@ program
   .option('-v, --verbose', 'Verbose output mode')
   .option('-l, --lang <language>', 'Language (en, zh-CN)', 'en')
   .option('--no-cleanup', 'Do not cleanup temporary directories')
+  .option('--cache-mode <mode>', 'Cache mode for remote repositories: persistent|temporary')
+  .option('--cache-max-age <ms>', 'Max cache age in milliseconds (optional)')
+  .option('--force-clone', 'Force fresh clone even if cache exists')
   .option('--show-contributors', 'Show detailed contributor statistics (default: only show summary)')
   .option('--no-fetch', 'Skip fetching remote branches for local repositories')
   .action(async (options) => {

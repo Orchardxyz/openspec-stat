@@ -1,15 +1,17 @@
 import simpleGit, { SimpleGit, SimpleGitProgressEvent } from 'simple-git';
-import { mkdtempSync, rmSync, existsSync, mkdirSync } from 'fs';
-import { tmpdir } from 'os';
+import { mkdtempSync, rmSync, existsSync, statSync } from 'fs';
 import { join, resolve } from 'path';
+import { createHash } from 'crypto';
 import chalk from 'chalk';
 import { GitAnalyzer } from '../git-analyzer';
 import { MultiRepoConfig, RepositoryConfig, RepositoryResult, CommitAnalysis } from '../types';
 import { t } from '../i18n/index';
 import { SpinnerManager } from '../ui/spinner';
+import { ensureGlobalCacheDir } from './cache-path';
 
 interface AnalyzerOptions {
   quiet?: boolean;
+  forceClone?: boolean;
 }
 
 interface BatchContext {
@@ -24,6 +26,8 @@ export class MultiRepoAnalyzer {
   private config: MultiRepoConfig;
   private tempDirs: Set<string> = new Set();
   private isQuiet: boolean;
+  private forceClone: boolean;
+  private shouldCleanupTemps = false;
   private cloneOrder: Map<string, number> = new Map();
   private totalCloneTargets = 0;
   private nextCloneIndex = 1;
@@ -31,6 +35,7 @@ export class MultiRepoAnalyzer {
   constructor(config: MultiRepoConfig, options?: AnalyzerOptions) {
     this.config = config;
     this.isQuiet = options?.quiet ?? false;
+    this.forceClone = options?.forceClone ?? false;
   }
 
   async analyzeAll(since: Date, until: Date): Promise<RepositoryResult[]> {
@@ -39,6 +44,7 @@ export class MultiRepoAnalyzer {
     this.cloneOrder.clear();
     this.nextCloneIndex = 1;
     this.totalCloneTargets = enabledRepos.filter((repo) => repo.type === 'remote').length;
+    let hadError = false;
 
     try {
       const localRepos = enabledRepos.filter((repo) => repo.type === 'local');
@@ -57,8 +63,16 @@ export class MultiRepoAnalyzer {
       );
 
       return [...localResults, ...remoteResults];
+    } catch (error) {
+      hadError = true;
+      throw error;
     } finally {
-      if (this.config.remoteCache?.cleanupOnComplete) {
+      const shouldCleanup = Boolean(
+        this.config.remoteCache?.cleanupOnComplete ||
+        (this.config.remoteCache?.cleanupOnError && hadError) ||
+        this.shouldCleanupTemps
+      );
+      if (shouldCleanup) {
         await this.cleanupTempDirs();
       }
     }
@@ -156,15 +170,120 @@ export class MultiRepoAnalyzer {
   }
 
   private async cloneRemoteRepository(repo: RepositoryConfig): Promise<string> {
-    const cacheDir = this.config.remoteCache?.dir || join(tmpdir(), 'openspec-stat-cache');
+    const cacheMode = repo.cacheMode || this.config.remoteCache?.mode || 'persistent';
 
-    if (!existsSync(cacheDir)) {
-      mkdirSync(cacheDir, { recursive: true });
+    if (cacheMode === 'temporary') {
+      this.shouldCleanupTemps = true;
+      return this.cloneToTempDirectory(repo);
     }
 
-    const tempDir = mkdtempSync(join(cacheDir, `${repo.name}-`));
-    this.tempDirs.add(tempDir);
+    const cachePath = this.getCacheRepoPath(repo);
+    const timeout = this.config.parallelism?.timeout || 600000;
 
+    const validCache = this.forceClone ? false : await this.isCacheValid(cachePath, repo.url!);
+
+    if (validCache) {
+      console.log(chalk.cyan(t('multi.repo.updating', { repo: repo.name })));
+      await this.withTimeout(this.updateCachedRepository(cachePath, repo), timeout, `Update timeout for ${repo.name}`);
+      return cachePath;
+    }
+
+    if (existsSync(cachePath)) {
+      rmSync(cachePath, { recursive: true, force: true });
+    }
+
+    return this.cloneToPath(cachePath, repo, false);
+  }
+
+  private ensureCacheDir(): string {
+    return ensureGlobalCacheDir();
+  }
+
+  private getCacheRepoPath(repo: RepositoryConfig): string {
+    const baseDir = this.ensureCacheDir();
+    const safeName = this.getSafeRepoName(repo);
+    const hash = createHash('sha256')
+      .update(repo.url || repo.name)
+      .digest('hex');
+    const id = hash.slice(0, 12);
+    return join(baseDir, `${safeName}-${id}`);
+  }
+
+  private getSafeRepoName(repo: RepositoryConfig): string {
+    const sanitize = (value: string): string => {
+      return value
+        .replace(/[^a-zA-Z0-9-_]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    };
+
+    const fromName = repo.name ? sanitize(repo.name) : '';
+    if (fromName) return fromName;
+
+    const rawUrl = repo.url || '';
+    const normalizedUrl = rawUrl.startsWith('git@') ? `ssh://${rawUrl.replace(':', '/')}` : rawUrl;
+    try {
+      const parsed = new URL(normalizedUrl);
+      const parts = parsed.pathname.split('/').filter(Boolean);
+      const repoPart = parts.pop();
+      const ownerPart = parts.pop();
+      const base = repoPart ? repoPart.replace(/\.git$/, '') : ownerPart;
+      const combined = ownerPart && base ? `${ownerPart}-${base}` : base;
+      const cleaned = combined ? sanitize(combined) : '';
+      if (cleaned) return cleaned;
+    } catch {
+      // ignore parsing errors and fallback
+    }
+
+    return 'repo';
+  }
+
+  private async isCacheValid(cachePath: string, repoUrl: string): Promise<boolean> {
+    if (!existsSync(cachePath)) return false;
+    if (!existsSync(join(cachePath, '.git'))) return false;
+
+    const maxAge = this.config.remoteCache?.maxAge;
+    if (maxAge !== undefined) {
+      try {
+        const stats = statSync(cachePath);
+        if (Date.now() - stats.mtimeMs > maxAge) {
+          return false;
+        }
+      } catch {
+        return false;
+      }
+    }
+
+    try {
+      const git = simpleGit(cachePath);
+      const remotes = await git.getRemotes(true);
+      const originUrl = remotes.find((r) => r.name === 'origin')?.refs?.fetch;
+      return originUrl === repoUrl;
+    } catch {
+      return false;
+    }
+  }
+
+  private buildCloneArgs(repo: RepositoryConfig): string[] {
+    const cloneArgs: string[] = ['--progress'];
+    if (repo.cloneOptions?.depth !== null && repo.cloneOptions?.depth !== undefined) {
+      cloneArgs.push(`--depth=${repo.cloneOptions.depth}`);
+    }
+    if (repo.cloneOptions?.singleBranch) {
+      cloneArgs.push('--single-branch');
+    }
+    return cloneArgs;
+  }
+
+  private async cloneToTempDirectory(repo: RepositoryConfig): Promise<string> {
+    const cacheDir = this.ensureCacheDir();
+    const safeName = this.getSafeRepoName(repo);
+    const tempDir = mkdtempSync(join(cacheDir, `${safeName}-tmp-`));
+    this.tempDirs.add(tempDir);
+    return this.cloneToPath(tempDir, repo, true);
+  }
+
+  private async cloneToPath(targetPath: string, repo: RepositoryConfig, trackTemp: boolean): Promise<string> {
     const progressSuffix = this.getProgressSuffix(repo.name);
     const cloneSpinner = this.isQuiet ? undefined : new SpinnerManager(false);
     this.reportCloneStatus('start', repo.name, progressSuffix, cloneSpinner);
@@ -181,29 +300,37 @@ export class MultiRepoAnalyzer {
     };
 
     const git: SimpleGit = simpleGit({ progress: progressReporter });
-
-    const cloneArgs: string[] = [];
-
-    // Enable git's progress output so simple-git can emit progress events
-    cloneArgs.push('--progress');
-
-    if (repo.cloneOptions?.depth !== null && repo.cloneOptions?.depth !== undefined) {
-      cloneArgs.push(`--depth=${repo.cloneOptions.depth}`);
-    }
-
-    if (repo.cloneOptions?.singleBranch) {
-      cloneArgs.push('--single-branch');
-    }
-
+    const cloneArgs = this.buildCloneArgs(repo);
     const timeout = this.config.parallelism?.timeout || 600000;
+
     try {
-      await this.withTimeout(git.clone(repo.url!, tempDir, cloneArgs), timeout, `Clone timeout for ${repo.name}`);
+      await this.withTimeout(git.clone(repo.url!, targetPath, cloneArgs), timeout, `Clone timeout for ${repo.name}`);
       this.reportCloneStatus('success', repo.name, progressSuffix, cloneSpinner);
-      return tempDir;
+      if (trackTemp) {
+        this.tempDirs.add(targetPath);
+      }
+      return targetPath;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       this.reportCloneStatus('fail', repo.name, progressSuffix, cloneSpinner, errorMessage);
       throw error;
+    }
+  }
+
+  private async updateCachedRepository(cachePath: string, repo: RepositoryConfig): Promise<void> {
+    const git = simpleGit(cachePath);
+    const timeout = this.config.parallelism?.timeout || 600000;
+
+    await this.withTimeout(git.fetch(['--all', '--prune']), timeout, `Fetch timeout for ${repo.name}`);
+
+    if (repo.branches.length > 0) {
+      const mainBranch = repo.branches[0].replace(/^origin\//, '');
+      try {
+        await git.checkout(mainBranch);
+        await git.reset(['--hard', `origin/${mainBranch}`]);
+      } catch {
+        // If branch checkout fails, continue with fetched state
+      }
     }
   }
 

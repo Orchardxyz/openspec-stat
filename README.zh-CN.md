@@ -64,6 +64,10 @@ openspec-stat multi -c .openspec-stats.multi.json --show-contributors
 
 详见 [多仓库模式指南](./MULTI_REPO_GUIDE.md)。
 
+**远程缓存**：远程仓库会首次克隆后复用，路径为
+`~/.openspec-stat/cached/repos/<仓库名>-<哈希>`。使用 `--cache-mode temporary`
+可改为一次性克隆，或用 `--force-clone` 在单次运行中强制重新克隆。
+
 ## 配置（简版）
 
 在仓库根目录创建 `.openspec-stats.json` 或 `openspec-stats.config.json`。

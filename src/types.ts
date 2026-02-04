@@ -110,13 +110,15 @@ export interface RepositoryConfig {
   };
   branches: string[];
   enabled?: boolean;
+  cacheMode?: 'persistent' | 'temporary';
 }
 
 export interface RemoteCacheConfig {
-  dir: string;
   autoCleanup: boolean;
   cleanupOnComplete: boolean;
   cleanupOnError: boolean;
+  mode: 'persistent' | 'temporary';
+  maxAge?: number;
 }
 
 export interface ParallelismConfig {
