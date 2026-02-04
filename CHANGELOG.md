@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.5
+
+### Patch Changes
+
+- 0993261: Add rerun prompt hotkeys and bold hints for multi-repo mode with exit handling.
+- 17b7055: Document and enforce global remote cache path with readable repo-name hashing
+- 17b542a: Clarify the English and Chinese READMEs with shorter quick-start, feature, and configuration sections.
+
 ## 1.4.4
 
 ### Patch Changes
