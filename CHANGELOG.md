@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.6
+
+### Patch Changes
+
+- aa7893f: Add AGENTS.md documentation with guidance for repository collaborators
+
 ## 1.4.5
 
 ### Patch Changes
